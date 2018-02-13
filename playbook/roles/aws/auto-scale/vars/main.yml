@@ -1,0 +1,27 @@
+userdata: |
+    #!/bin/sh
+    sleep 10
+
+    # set hosts file for tomcat
+    IP=`curl -s http://169.254.169.254/latest/meta-data/local-ipv4`
+    HOST=`hostname`
+    echo -n $IP $HOST >> /etc/hosts
+
+    # update packages to latest
+    yum clean all
+    yum -y update
+
+    # create services account
+    #adduser -r -m -d /services -s /sbin/nologin -c "Common Services Account" suser
+    mkdir -p /skt/{web,was,batch}
+    mkdir -p /skt/batch/logs
+    mkdir -p /skt/web/{instance01,logs}
+    mkdir -p /skt/was/apps/instance01/{conf,lib,logs,temp,webapps,work}
+    chown nobody.adm /skt/was/apps/instance01/{logs,temp,work}
+    chown root.nobody /skt/was/apps/instance01/{conf,lib}
+    chown skt.nobody /skt/was/apps/instance01/webapps
+    chmod 2775 -R /skt/was/apps/instance01
+
+    # call home
+    curl 'http://10.10.10.100:2080/__callback?ansible-playbook@{{ aws_profile }}@{{ tag_name }}@$IP'
+    curl 'http://10.10.10.100:2080/__callback?ansible-playbook@{{ aws_profile }}@{{ tag_env }}-deploy@$IP@-e "tag_name={{ tag_name }} target={{ target }} siteup_url={{ siteup_url }}"@io:async'

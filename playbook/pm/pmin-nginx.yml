@@ -1,0 +1,10 @@
+---
+# file: pmin.yml
+# ex ansible-playbook pmin-nginx.yml -e "tag_name=prd-ex-admin domain=www.hiddenx.co.kr"
+
+- name: Service PM IN Nginx
+  hosts: "{{ tag_name | regex_replace('^', 'tag_Name_') }}"
+  vars_files:
+    - "../{{ lookup('env', 'AWS_PROFILE') }}/group_vars/all.yml"
+  roles:
+    - { role: pm/in/nginx }

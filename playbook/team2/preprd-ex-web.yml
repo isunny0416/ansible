@@ -1,0 +1,33 @@
+---
+# file: preprd-ex-web.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: preprd-ex-web
+    instance_type: t2.medium
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    elb_conn_drain_tmout: 10
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    - { role: aws/ext-elb }
+
+- name: Configure instance(s)
+  hosts: tag_Name_preprd-ex-web
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: preprd-ex-web
+    domain: pre-www.hiddenx.co.kr
+    awslogs: {
+      target: [ nodejs ] # target : array, values = [ catalina, admin, api, batch, nodejs ], log target parameter
+    }
+  roles:
+    - { role: modules/nginx }
+    - { role: modules/nodejs, tag_env: preprd }
+    - { role: modules/awslogs }
+    - { role: wrapper-node }

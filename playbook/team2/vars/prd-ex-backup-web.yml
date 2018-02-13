@@ -1,0 +1,53 @@
+# Auto Scaling
+asg_min_size: 1
+asg_max_size: 8
+asg_desired_capacity: 1
+asg_az:
+  - "ap-northeast-2a"
+  - "ap-northeast-2c"
+vpc_zone_identifier:
+  - "{{ subnet20 }}"
+  - "{{ subnet120 }}"
+scale_down_adj: -1
+scale_up_adj: 1
+alarm_metric: {
+  "metric": "NetworkIn",
+  "unit": "Bytes",
+  "alarm_down_threshold": 30000000,
+  "alarm_up_threshold": 75000000
+}
+asg_notification_types:
+  - "autoscaling:EC2_INSTANCE_LAUNCH"
+  - "autoscaling:EC2_INSTANCE_LAUNCH_ERROR"
+  - "autoscaling:EC2_INSTANCE_TERMINATE"
+  - "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+assign_public_ip: no
+
+# Security Group
+sg_elb:
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    cidr_ip: 0.0.0.0/0
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 0.0.0.0/0
+  - proto: icmp # Ping Monitoring
+    from_port: 8
+    to_port: -1
+    cidr_ip: 52.78.10.248/32
+
+sg_instance:
+  - proto: tcp
+    from_port: 2080
+    to_port: 2080
+    group_name: "{{ tag_name }}-elb"
+  - proto: tcp # Must Delete
+    from_port: 9000
+    to_port: 9000
+    group_name: "{{ tag_name }}-elb"
+  - proto: tcp # Jenkins health check
+    from_port: 9000
+    to_port: 9000
+    cidr_ip: 10.10.90.58/32

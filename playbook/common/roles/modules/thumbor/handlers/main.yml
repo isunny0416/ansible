@@ -1,0 +1,8 @@
+---
+# file: roles/modules/thumbor/handlers/main.yml
+
+- name: daemon reload
+  shell: systemctl daemon-reload
+
+- name: restart thumbor
+  service: name=thumbor enabled=yes state=restarted

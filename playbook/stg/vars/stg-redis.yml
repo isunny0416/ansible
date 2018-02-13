@@ -1,0 +1,26 @@
+# Security Group
+sg_instance:
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "stg-ex-admin"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "stg-ex-api"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "stg-logstash"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "stg-ex-search-api"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "stg-ex-batch"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    cidr_ip: 10.10.90.218/32

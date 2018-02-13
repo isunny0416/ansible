@@ -1,0 +1,13 @@
+---
+# roles/aws/sns/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Create alarm SNS topic
+  sns_topic:
+    region: "{{ region }}"
+    name: "{{ sns.name }}"
+    state: present
+    display_name: "{{ sns.name }}"
+    subscriptions: "{{ sns.subscriptions }}"
+  delegate_to: localhost
+  register: sns_topic

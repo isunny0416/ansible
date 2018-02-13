@@ -1,0 +1,25 @@
+---
+# file: roles/modules/jenkins-slave/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- stat: path=/skt/bin
+  register: rs
+
+- file: path=/skt/bin state=directory
+  when: not rs.stat.exists 
+
+- name: Download jenkins.jar
+  get_url: 
+    url: http://jenkins.sktvl.com/jnlpJars/slave.jar
+    dest: /skt/bin
+    owner: root
+    group: root
+    mode: 644    
+
+- name: Copy jenkins-slave.service systemd
+  template: src=jenkins-slave.service.j2 dest=/usr/lib/systemd/system/jenkins-slave.service owner=root group=root mode=644
+  notify: daemon reload
+
+- name: jenkins-slave configuration files
+  copy: src=jenkins-slave dest=/etc/sysconfig/jenkins-slave owner=root group=root mode=644 
+  notify: restart jenkins-slave

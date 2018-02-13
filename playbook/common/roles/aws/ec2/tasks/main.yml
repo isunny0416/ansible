@@ -1,0 +1,36 @@
+---
+# file: roles/aws/ec2/tasks/ec2.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: create, start an instance in ec2
+  ec2:
+    key_name: "{{ keypair }}"
+    group: [ "common", "{{ tag_name }}" ]
+    instance_type: "{{ instance_type }}"
+    image: "{{ image }}"
+    wait: true
+    region: "{{ region }}"
+    vpc_subnet_id: "{{ subnet_id }} "
+    termination_protection: "{{ termination_protection }}"
+    instance_profile_name: "{{ instance_role }}"
+    monitoring: yes
+    placement_group: "{{ placement_group }}"
+    instance_tags:
+        Name: "{{ tag_name }}"
+        Env: "{{ tag_env }}"
+    count_tag:
+        Name: "{{ tag_name }}"
+        Env: "{{ tag_env }}"
+    exact_count: "{{ vm_per_subnet }}"
+    user_data: "{{ userdata }}"
+  register: ec2
+
+- name: Wait for SSH to come up
+  wait_for: host="{{ item.private_dns_name }}" port=2022 delay=30 timeout=180 state=started
+  with_items: "{{ ec2.instances }}"
+
+- meta: refresh_inventory
+
+#- name: Add new instance to host group
+#  add_host: hostname="{{ item.private_ip }}" groupname=launched tag_name="{{ tag_name }}"
+#  with_items: "{{ ec2.tagged_instances }}"

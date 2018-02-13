@@ -1,0 +1,14 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DenyCreateDelete",
+            "Effect": "Deny",
+            "Action": [
+                "rds:DeleteDBInstance",
+                "rds:CreateDBInstance"
+            ],
+            "Resource": "arn:aws:rds:ap-northeast-2:118219724180:db:*"
+        }
+    ]
+}

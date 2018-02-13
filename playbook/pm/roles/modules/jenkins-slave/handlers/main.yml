@@ -1,0 +1,8 @@
+---
+# file: roles/modules/jenkins-slave/handlers/main.yml
+
+- name: daemon reload
+  shell: systemctl daemon-reload
+
+- name: restart jenkins-slave
+  service: name=jenkins-slave enabled=yes state=restarted

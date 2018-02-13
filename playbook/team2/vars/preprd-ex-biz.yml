@@ -1,0 +1,12 @@
+# Middleware Siteup
+siteup_url: /biz/siteup.html
+
+sg_instance:
+  - proto: tcp
+    from_port: 9000
+    to_port: 9000
+    group_name: "prd-ex-web"
+  - proto: tcp # Jenkins health check
+    from_port: 9000
+    to_port: 9000
+    cidr_ip: 10.10.90.58/32

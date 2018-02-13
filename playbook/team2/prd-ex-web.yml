@@ -1,0 +1,38 @@
+---
+# file: prd-ex-web.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: prd-ex-web
+    lcver: 2017033001 # laucher config version
+    instance_type: t2.medium
+    #instance_type: t2.micro
+    instance_role: cloudwatch-logs-role
+    elb_conn_drain_tmout: 10
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ext-asg-elb }
+    # Autoscaling notification is generated when you create a sns
+    - { role: aws/sns, sns: "{{ auto_scaling_sns }}" }
+    # target : string, deploy target app or web
+    # scheduled : boolean, Auto scal schedule
+    - { role: aws/auto-scale, target: web, scheduled: false }
+
+- name: Configure instance(s)
+  hosts: tag_Name_prd-ex-web
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: prd-ex-web
+    domain: www.hiddenx.co.kr
+    awslogs: {
+      target: [ nodejs,nodejs_err,web_inicis ] # target : array, values = [ catalina, admin, api, batch, nodejs ], log target parameter
+    }
+  roles:
+    - { role: aws/cloudwatch-alarm }
+    - { role: modules/nginx }
+    - { role: modules/nodejs }
+    - { role: modules/awslogs }
+    - { role: wrapper-node }

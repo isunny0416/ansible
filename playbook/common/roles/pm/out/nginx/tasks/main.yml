@@ -1,0 +1,6 @@
+---
+# file: roles/pm/out/nginx/tasks/main.yml
+
+- name: Rollback nginx config file
+  copy: src={{ inventory_hostname }}/etc/nginx/conf.d/vhosts.conf dest=/etc/nginx/conf.d/vhosts.conf owner=root group=root mode=644
+  notify: restart nginx

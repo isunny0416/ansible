@@ -1,0 +1,27 @@
+---
+# file: dev-fe-web.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: dev-fe-web
+    instance_type: t2.micro
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet90 }}" }
+    - { role: aws/eip }
+
+- name: Configure instance(s)
+  hosts: tag_Name_dev-fe-web
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: dev-fe-web
+    domain: localhost
+  roles:
+    - { role: modules/nodejs }
+    - { role: wrapper-node }

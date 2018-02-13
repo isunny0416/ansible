@@ -1,0 +1,8 @@
+---
+# file: roles/modules/nodejs/handlers/main.yml
+
+- name: daemon reload
+  shell: systemctl daemon-reload
+
+- name: restart pm2
+  service: name=pm2 enabled=yes state=restarted

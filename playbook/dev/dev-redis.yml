@@ -1,0 +1,10 @@
+---
+# file: dev-redis.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: dev-redis
+  roles:
+    - { role: aws/sg }

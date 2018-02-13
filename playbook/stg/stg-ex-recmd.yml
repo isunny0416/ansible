@@ -1,0 +1,28 @@
+---
+# file: stg-ex-recmd.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: stg-ex-recmd
+    instance_type: m4.large
+    instance_role: api-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    # tag_name : string, tag name of dependency security group
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+
+- name: Configure instance(s)
+  hosts: tag_Name_stg-ex-recmd
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: stg-ex-recmd
+    jenkins_secret: "088f81fdab0685d72ab4d466cea6bdf7c83ff654a59d381c8a156f414654bbb3"
+  roles:
+    - { role: modules/java }
+    - { role: modules/jenkins-slave }
+    - { role: wrapper-node }

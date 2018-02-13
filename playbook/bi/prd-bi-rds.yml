@@ -1,0 +1,10 @@
+---
+# file: prd-bi-rds.yml
+
+- name: AWS BI rds security group provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+      tag_name: prd-bi-rds
+  roles:
+    - { role: aws/sg }

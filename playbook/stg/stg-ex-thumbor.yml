@@ -1,0 +1,37 @@
+---
+# file: stg-ex-thumbor.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: stg-ex-thumbor
+    lcver: 2017020901 # laucher config version
+    instance_type: t2.medium
+    instance_role: api-role
+    elb_conn_drain_tmout: 10
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ext-asg-elb }
+    # Autoscaling notification is generated when you create a sns
+    #- { role: aws/sns, sns: "{{ auto_scaling_sns }}" }
+    # target : string, deploy target app or web
+    # scheduled : boolean, Auto scal schedule
+    - { role: aws/auto-scale, target: thumbor, scheduled: false }
+
+- name: Configure instance(s)
+  hosts: tag_Name_stg-ex-thumbor
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: stg-ex-thumbor
+    domain: stg-ex-thumbor.sktvl.com
+    security_key: STG_HIDDEN_Q7XG21
+    tc_aws_region: ap-northeast-2
+    tc_aws_loader_bucket: stg-ex-img
+    tc_aws_storage_bucket: stg-ex-thumbor
+    tc_aws_result_storage_bucket: stg-ex-thumbor
+  roles:
+    - { role: modules/nginx }
+    - { role: modules/thumbor }
+    - { role: wrapper-node }

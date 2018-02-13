@@ -1,0 +1,13 @@
+[Unit]
+Description=jenkins-slave System Ctl
+After=syslog.target network.target
+
+[Service]
+User=root
+
+EnvironmentFile=/etc/sysconfig/jenkins-slave
+
+ExecStart=/usr/lib/jvm/default/bin/java -jar ${exec_dir}/slave.jar -jnlpUrl http://jenkins.sktvl.com/computer/{{ tag_name }}/slave-agent.jnlp -secret {{ jenkins_secret }}
+
+[Install]
+WantedBy=multi-user.target

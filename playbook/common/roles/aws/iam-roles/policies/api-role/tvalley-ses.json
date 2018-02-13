@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1470798027000",
+            "Effect": "Allow",
+            "Action": [
+                "ses:GetSendQuota",
+                "ses:GetSendStatistics",
+                "ses:SendBounce",
+                "ses:SendEmail",
+                "ses:SendRawEmail"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}

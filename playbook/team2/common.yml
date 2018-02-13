@@ -1,0 +1,16 @@
+---
+# file: prd-common.yml
+
+- name: AWS common security group provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: common
+  roles:
+    - { role: aws/sg }
+    #- { role: aws/iam-groups, groups_name: developer } # groups_name : string, iam group name
+    #- { role: aws/iam-groups, groups_name: dba } # groups_name : string, iam group name
+    #- { role: aws/iam-groups, groups_name: jenkins } # groups_name : string, iam group name
+    #- { role: aws/iam-roles, roles_name: api-role } # roles_name : string, iam role name
+    #- { role: aws/iam-roles, roles_name: cloudwatch-logs-role } # roles_name : string, iam role name
+    #- { role: aws/iam-roles, roles_name: lambda-s3-exec-role } # roles_name : string, iam role name

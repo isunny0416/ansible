@@ -1,0 +1,19 @@
+#
+# spring boot config file
+#
+
+# Environment Value
+ENV=prd
+
+# APP Base
+APP_BASE=/skt/was/apps/instance01/webapps
+
+# Log Base
+LOG_PATH=/skt/was/apps/instance01/logs
+
+# Application Port
+PORT=9000
+
+# java options
+JAVA_OPTS="-Xms1g -Xmx1g -javaagent:/skt/was/apps/instance01/libs/scouter.agent.jar -Dscouter.config=/skt/was/apps/instance01/conf/scouter.conf"
+

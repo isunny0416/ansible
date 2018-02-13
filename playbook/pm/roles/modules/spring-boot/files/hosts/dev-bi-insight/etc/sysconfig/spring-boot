@@ -1,0 +1,16 @@
+#
+# spring boot tdi config file
+#
+
+# Environment Value
+ENV=dev
+
+# APP Base
+APP_BASE=/skt/was/apps/instance01/webapps
+
+# Log Base
+LOG_PATH=/skt/was/apps/instance01/logs
+
+# Application Port
+PORT=9000
+

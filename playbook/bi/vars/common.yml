@@ -1,0 +1,16 @@
+# Security Groups
+sg_instance:
+  - proto: udp
+    from_port: 2161
+    to_port: 2161
+    cidr_ip: 10.10.10.18/32
+  - proto: all
+    cidr_ip: 10.10.10.100/32
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    cidr_ip: 10.10.90.58/32 #Jenkins Sever
+  - proto: icmp
+    from_port: 8
+    to_port: -1
+    cidr_ip: 10.0.0.0/8

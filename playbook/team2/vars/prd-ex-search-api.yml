@@ -1,0 +1,61 @@
+# Middleware Siteup
+siteup_url: /search/siteup.html
+
+# Local Internal ELB Listeners, Health Check
+int_elb_listeners:
+  - protocol: http # API Internal
+    load_balancer_port: 9000
+    instance_protocol: http
+    instance_port: 9000
+
+health_check_int_elb: {
+  ping_protocol: http,
+  ping_port: 9000,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Auto Scaling Metric
+asg_min_size: 2
+asg_max_size: 8
+asg_desired_capacity: 2
+asg_az:
+  - "ap-northeast-2a"
+  - "ap-northeast-2c"
+vpc_zone_identifier:
+  - "{{ subnet20 }}"
+  - "{{ subnet120 }}"
+scale_down_adj: -2
+scale_up_adj: 2
+alarm_metric: {
+  "metric": "CPUUtilization",
+  "unit": "Percent",
+  "alarm_down_threshold": 20.0,
+  "alarm_up_threshold": 70.0
+}
+asg_notification_types:
+  - "autoscaling:EC2_INSTANCE_LAUNCH"
+  - "autoscaling:EC2_INSTANCE_LAUNCH_ERROR"
+  - "autoscaling:EC2_INSTANCE_TERMINATE"
+  - "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+assign_public_ip: no
+
+# Security Group
+sg_internal_elb:
+  - proto: tcp
+    from_port: 9000
+    to_port: 9000
+    group_name: "prd-ex-api"
+
+sg_instance:
+  - proto: tcp
+    from_port: 9000
+    to_port: 9000
+    group_name: "{{ tag_name }}-internal-elb"
+  - proto: tcp # Jenkins health check
+    from_port: 9000
+    to_port: 9000
+    cidr_ip: 10.10.90.58/32

@@ -1,0 +1,28 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1432812345671",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:GetFunction",
+                "lambda:CreateFunction",
+                "lambda:UpdateFunctionCode",
+                "lambda:UpdateFunctionConfiguration"
+            ],
+            "Resource": [
+                "arn:aws:lambda:*:*:function:*"
+            ]
+        },
+        {
+            "Sid": "Stmt14328112345672",
+            "Effect": "Allow",
+            "Action": [
+                "iam:Passrole"
+            ],
+            "Resource": [
+                "arn:aws:iam::*:role/*"
+            ]
+        }
+    ]
+}

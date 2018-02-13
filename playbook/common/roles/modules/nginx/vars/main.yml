@@ -1,0 +1,5 @@
+---
+# file: roles/modules/nginx/vars/main.yml
+
+web_port: 2080
+was_port: 9000

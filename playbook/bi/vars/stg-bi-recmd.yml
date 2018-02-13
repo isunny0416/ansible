@@ -1,0 +1,3 @@
+sg_instance:
+  - proto: all
+    cidr_ip: 10.11.0.0/16

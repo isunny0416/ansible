@@ -1,0 +1,4 @@
+---
+# file: roles/modules/redis/vars/main.yml
+
+redis_port: 8379

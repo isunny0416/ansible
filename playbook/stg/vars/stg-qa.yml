@@ -1,0 +1,23 @@
+sg_instance:
+  - proto: all
+    cidr_ip: 10.10.90.218/32
+  - proto: tcp # T-Tower Wired
+    from_port: 80
+    to_port: 80
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 80
+    to_port: 80
+    cidr_ip: 203.236.9.0/24
+  - proto: tcp # T-Tower Wired
+    from_port: 9000
+    to_port: 9000
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 9000
+    to_port: 9000
+    cidr_ip: 203.236.9.0/24
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    group_name: "{{ tag_env }}-jumphost"

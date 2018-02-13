@@ -1,0 +1,24 @@
+---
+# file: roles/modules/scouter-host/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Copy Scouter host libs directory
+  copy: src=agent.host/ dest=/skt/scouter/agent.host/ owner=root group=root mode=644
+
+- name: Permission Change Shell script
+  file: path="{{ item }}" owner=root group=root mode=755
+  with_items:
+    - /skt/scouter/agent.host/host.sh
+    - /skt/scouter/agent.host/stop.sh
+
+- name: Copy Scouter host service configuration files
+  copy: src=scouter dest=/etc/sysconfig/scouter owner=root group=root mode=644
+  
+- name: Copy Scouter host service files
+  copy: src=scouter.service dest=/etc/systemd/system/scouter.service owner=root group=root mode=644
+  notify: daemon reload
+
+- name: Copy Scouter host configuration files
+  template: src=scouter.conf.j2 dest=/skt/scouter/agent.host/conf/scouter.conf owner=root group=root mode=644
+  notify: restart scouter-host
+  

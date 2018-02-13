@@ -1,0 +1,28 @@
+---
+# file: prd-bi-recmd.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: prd-bi-recmd
+    instance_type: t2.large
+    instance_role: api-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    # tag_name : string, tag name of dependency security group
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+
+- name: Configure instance(s)
+  hosts: tag_Name_prd-bi-recmd
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: prd-bi-recmd
+    jenkins_secret: "1c19f34c17b72b47f0c6d18b59643c2385d67244f21500297fe0d04c1e45de0a"
+  roles:
+    - { role: modules/java }
+    - { role: modules/jenkins-slave }
+    - { role: wrapper-node }

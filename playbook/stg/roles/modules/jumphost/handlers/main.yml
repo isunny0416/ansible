@@ -1,0 +1,5 @@
+---
+# file: roles/modules/jumphost/handlers/main.yml
+
+- name: restart sssd
+  service: name=sssd enabled=yes state=restarted 

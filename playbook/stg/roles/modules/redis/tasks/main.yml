@@ -1,0 +1,13 @@
+---
+# file: roles/modules/redis/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Install Devel Packages
+  yum: pkg={{ item }} state=installed
+  with_items:
+    - redis
+
+- name: Create redis configuration file
+  template: src=redis.conf.j2 dest=/etc/redis.conf owner=root group=root mode=644
+  notify: restart redis
+  

@@ -1,0 +1,6 @@
+# LOGSTASH Profile
+
+LOGSTASH_HOME="/opt/logstash"
+PATH="${PATH}:${LOGSTASH_HOME}/bin"
+
+export LOGSTASH_HOME PATH

@@ -1,0 +1,15 @@
+[Unit]
+Description=T-Valley Data Insight
+After=syslog.target network.target
+
+[Service]
+User=nobody
+
+EnvironmentFile=/etc/sysconfig/tdi
+
+ExecStart=/usr/lib/jvm/default/bin/java -jar -Dspring.profiles.active=${ENV} -Dlogging.file=${LOG_PATH}/tdi.log -Dserver.port=${PORT} ${APP_BASE}/ROOT.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+

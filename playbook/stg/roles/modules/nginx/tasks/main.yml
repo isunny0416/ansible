@@ -1,0 +1,26 @@
+---
+# file: roles/modules/nginx/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Install Devel Packages
+  yum: pkg="{{ item }}" state=installed
+  with_items:
+    - nginx
+
+- name: Create nginx.conf file
+  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf owner=root group=root mode=644
+  notify: restart nginx
+
+- stat: path="{{ playbook_dir }}/roles/modules/nginx/files/hosts/{{ tag_name }}"
+  register: hosts
+  delegate_to: localhost
+
+- name: Create nginx conf.d file - hosts config
+  copy: src="hosts/{{ tag_name }}/" dest=/ owner=root group=root
+  notify: restart nginx
+  when: hosts.stat.exists
+
+- name: Create nginx conf.d file - default config
+  template: src=vhosts-default.conf.j2 dest=/etc/nginx/conf.d/vhosts.conf owner=root group=root mode=644
+  notify: restart nginx
+  when: not hosts.stat.exists

@@ -1,0 +1,150 @@
+---
+# file: group_vars/all.yml
+
+# Environment Variable Set
+tag_env: prd
+aws_profile: "{{ lookup('env', 'AWS_PROFILE') }}"
+siteup_url: /siteup.html
+
+# EC2 Variable Set
+placement_group:
+
+# Set Network Params
+vpc_id: vpc-e1a51a88
+region: ap-northeast-2
+subnet10: subnet-ef67df86
+subnet20: subnet-b758e0de
+subnet30: subnet-9d58e0f4
+subnet90: subnet-8567dfec
+subnet110: subnet-2100f86c
+subnet120: subnet-3e01f973
+subnet130: subnet-3101f97c
+subnet190: subnet-df00f892
+
+# AD Auth Group
+ldap_access_cn: qa
+
+# Set ELB
+elbs: [] # Auto Scaling ELB LIST (default null)
+ssl_certificate_id: arn:aws:acm:ap-northeast-2:799460249948:certificate/bb2092c5-07d3-4b5f-9439-59d5d04cb994
+access_logs:
+  interval: 5 # minutes
+  s3_location: "team2-elb-access-log"
+  s3_prefix: "{{ tag_name }}"
+elb_subnets:
+  - "{{ subnet90 }}"
+  - "{{ subnet190 }}"
+interal_elb_subnets:
+  - "{{ subnet20 }}"
+  - "{{ subnet120 }}"
+
+# Global External ELB Listeners, Health Check
+ext_elb_listeners:
+  - protocol: http
+    load_balancer_port: 80
+    instance_protocol: http
+    instance_port: 2080
+  - protocol: https
+    load_balancer_port: 443
+    instance_protocol: http
+    instance_port: 2080
+    ssl_certificate_id: "{{ ssl_certificate_id }}"
+
+health_check_ext_elb: {
+  ping_protocol: http,
+  ping_port: 2080,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Global Internal ELB Listeners, Health Check
+int_elb_listeners:
+  - protocol: http
+    load_balancer_port: 9000
+    instance_protocol: http
+    instance_port: 9000
+
+health_check_int_elb: {
+  ping_protocol: http,
+  ping_port: 9000,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Set Auto Scaling Notificate Configure Default value
+asg_sns_topic:
+asg_notification_types: []
+
+# Set Auto Scaling scheduled Configure Default value
+scheduled: false
+
+# Set SNS Topic
+## Auto Recovery
+auto_recovery_sns:
+  name: auto-recovery
+  subscriptions:
+    - endpoint: aws-team2@sktechx.com
+      protocol: email
+## Auto Scaling
+auto_scaling_sns:
+  name: send-email
+  subscriptions:
+    - endpoint: aws-team2@sktechx.com
+      protocol: email
+
+# CloudWatch alarms metric
+cw_alarm_metric:
+  - metric: df.percent_bytes.used
+    namespace: collectd
+    statistic: Maximum
+    threshold: 80
+    period: 60
+    evaluation_periods: 3
+    sns_topic_arn: arn:aws:sns:ap-northeast-2:799460249948:cloudwatch-alarm
+    dimensions: {
+      Host: "{{ ansible_ec2_instance_id }}",
+      PluginInstance: root
+    }
+  - metric: memory.percent.used
+    namespace: collectd
+    statistic: Average
+    threshold: 80
+    period: 60
+    evaluation_periods: 3
+    sns_topic_arn: arn:aws:sns:ap-northeast-2:799460249948:cloudwatch-alarm
+    dimensions: {
+      Host: "{{ ansible_ec2_instance_id }}",
+      PluginInstance: NONE
+    }
+  - metric: CPUUtilization
+    namespace: AWS/EC2
+    statistic: Average
+    threshold: 80
+    period: 60
+    evaluation_periods: 3
+    sns_topic_arn: arn:aws:sns:ap-northeast-2:799460249948:cloudwatch-alarm
+    dimensions: {
+      InstanceId: "{{ ansible_ec2_instance_id }}"
+    }
+
+# Aws logs
+awslogs: {
+  target: [] # target : array, values = [ catalina, admin, api, batch, nodejs ], log target parameter
+}
+
+# Set Instance Params
+image: ami-1839e976
+keypair: team2_prd
+instance_role:
+termination_protection: yes
+volumeinfo:
+  - device_name: /dev/sda1
+    volume_size: 30
+    device_type: gp2
+    delete_on_termination: "true"

@@ -1,0 +1,10 @@
+sg_instance:
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    group_name: "{{ tag_env }}-jumphost"
+# Jenkins Spring-boot batch
+  - proto: tcp
+    from_port: 9000
+    to_port: 9000
+    cidr_ip: 10.0.0.0/8

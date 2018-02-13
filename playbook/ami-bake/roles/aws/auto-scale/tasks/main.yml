@@ -1,0 +1,31 @@
+---
+# roles/aws/auto-scale/tasks/auto-scale.yml
+- include_vars: "group_vars/{{ lookup('env', 'AWS_PROFILE') }}.yml"
+
+- name: Create AWS Autoscaling Launch Configurations
+  ec2_lc:
+    name: "{{ tag_name }}-{{ lcver }}"
+    image_id: "{{ ami.results[0].image_id }}"
+    key_name: "{{ keypair }}"
+    region: "{{ region }}"
+    security_group_names: [ "common", "{{ tag_name }}" ]
+    instance_type: "{{ instance_type }}"
+    instance_profile_name: "{{ instance_role }}"
+    volumes: "{{ volumeinfo }}"
+    assign_public_ip: no
+    instance_monitoring: yes
+
+- name: Create AWS Autoscaling Groups
+  ec2_asg:
+    name: "{{ tag_name }}"
+    region: "{{ region }}"
+    replace_all_instances: no
+    launch_config_name: "{{ tag_name }}-{{ lcver }}"
+
+- name: terminate an old AWS Autoscaling Launch Configurations
+  ec2_lc:
+    name:
+    image_id: "{{ item.ami_id }}"
+    region: "{{ region }}"
+    state: "absent"
+  with_items: "{{ ami_find.results[2:(ami_find.results|length)] }}"

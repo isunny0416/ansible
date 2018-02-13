@@ -1,0 +1,41 @@
+---
+# file: roles/modules/thumbor/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Install Devel Packages
+  yum: pkg="{{ item }}" state=installed
+  with_items:
+    - 'libjpeg*'
+    - 'libpng*'
+    - libcurl-devel
+    - zlib-devel
+    - python-devel
+    - python-pip
+    - python-crypto
+
+- name: Install PIP Upgrade
+  pip: name="{{ item }}" state=present
+  with_items:
+    - pip
+
+- name: Install PIP modules install
+  pip: name="{{ item }}" state=present
+  with_items:
+    - opencv-python
+    - tc_aws
+    - thumbor
+
+- name: Copy /etc/sysconfig/thumbor configuration files
+  template: src=thumbor.j2 dest=/etc/sysconfig/thumbor owner=root group=root mode=644
+  notify: restart thumbor
+
+- name: Copy thumbor.service systemd script file
+  copy: src=thumbor.service dest=/usr/lib/systemd/system/thumbor.service owner=root group=root mode=644
+  notify: daemon reload
+
+- name: create /etc/thumbor directory
+  file: path=/etc/thumbor state=directory owner=root group=root recurse=yes
+
+- name: Create thumbor.conf file
+  template: src=thumbor.conf.j2 dest=/etc/thumbor/thumbor.conf owner=root group=root mode=644
+  notify: restart thumbor

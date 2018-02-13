@@ -1,0 +1,26 @@
+---
+# file: prd-logstash.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: prd-logstash
+    instance_type: t2.micro
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet30 }}" }
+
+- name: Configure instance(s)
+  hosts: tag_Name_prd-logstash
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: prd-logstash
+  roles:
+    - { role: aws/cloudwatch-alarm }
+    - { role: modules/logstash }
+    - { role: wrapper-node }

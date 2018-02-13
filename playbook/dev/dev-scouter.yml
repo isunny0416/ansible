@@ -1,0 +1,31 @@
+---
+# file: dev-scouter.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: dev-scouter
+    instance_type: t2.medium
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    # sns_name : string, sns_topic name
+    # sns_email : string, sns_topic endpoint value
+    # protocol : string, sns_topic protocol
+    # - { role: aws/sns, sns_name: auto-recovery, sns_email: aws-tvalley-dev@sktechx.com, protocol: email }
+    # - { role: aws/auto-recovery }
+
+- name: Configure instance(s)
+  hosts: tag_Name_dev-scouter
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: dev-scouter
+    domain: localhost
+  roles:
+    - { role: modules/java }
+    - { role: wrapper-node }

@@ -1,0 +1,39 @@
+# Security Group
+sg_instance:
+# STG jumphost
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    group_name: "{{ tag_env }}-jumphost"
+# Scouter agent to server
+  - proto: tcp
+    from_port: 6100
+    to_port: 6100
+    group_name: stg-ex-api
+  - proto: udp
+    from_port: 6100
+    to_port: 6100
+    group_name: stg-ex-api
+  - proto: tcp
+    from_port: 6100
+    to_port: 6100
+    group_name: stg-ex-admin
+  - proto: udp
+    from_port: 6100
+    to_port: 6100
+    group_name: stg-ex-admin  
+  - proto: udp
+    from_port: 6100
+    to_port: 6100
+    group_name: stg-ex-biz 
+# Scouter client to server (VPN)
+  - proto: tcp
+    from_port: 6100
+    to_port: 6100
+    cidr_ip: 10.10.90.218/32
+# Scouter client to server (DBA-VPN)
+  - proto: tcp
+    from_port: 6100
+    to_port: 6100
+    cidr_ip: 10.10.190.229/32
+

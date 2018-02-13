@@ -1,0 +1,5 @@
+---
+# file: roles/modules/scouter-agent/vars/main.yml
+
+net_collector_udp_port: 6100
+net_collector_tcp_port: 6100

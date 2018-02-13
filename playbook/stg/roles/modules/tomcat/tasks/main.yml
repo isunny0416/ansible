@@ -1,0 +1,29 @@
+---
+# file: roles/modules/tomcat/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Install Devel Packages
+  yum: pkg="{{ item }}" state=installed
+  with_items:
+    - tomcat-8.0.0-apache
+
+- name: catalina.out logrotate.d
+  template: src="tomcat.logroate.j2" dest="/etc/logrotate.d/tomcat" owner=root group=root mode=644
+
+- name: Copy tomcat common configuration directory
+  copy: src=common/conf/ dest=/skt/was/apps/instance01/conf/ owner=root group=root mode=644
+  notify: restart tomcat
+
+- stat: path="{{ playbook_dir }}/roles/modules/tomcat/files/hosts/{{ tag_name }}"
+  register: hosts
+  delegate_to: localhost
+
+- name: Create tomcat local config file - hosts config
+  copy: src="hosts/{{ tag_name }}/" dest=/ owner=root group=root
+  notify: restart tomcat
+  when: hosts.stat.exists
+
+- name: Copy /etc/sysconfig/tomcat configuration files
+  template: src=tomcat.j2 dest=/etc/sysconfig/tomcat owner=root group=root mode=644
+  notify: restart tomcat
+  when: not hosts.stat.exists

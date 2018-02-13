@@ -1,0 +1,25 @@
+---
+# file: stg-es.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: stg-es
+    instance_type: t2.medium
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 3
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet30 }}" }
+
+- name: Configure instance(s)
+  hosts: tag_Name_stg-es
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: stg-es
+  roles:
+    - { role: modules/elasticsearch }
+    - { role: wrapper-node }

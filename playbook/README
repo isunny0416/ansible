@@ -1,0 +1,41 @@
+ansible 2.1.0.0
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = Default w/o overrides
+
+[Directory 설명]
+
+./bi                             : 빅데이터 플레이북 디렉토리
+./dev                            : 개발환경 플레이북 디렉토리
+./stg                            : 스테이지환경 플레이북 디렉토리
+./team2                          : 상용 team2 플레이북 디렉토리
+
+./roles/aws                      : AWS 프로비저닝 task 디렉토리
+./roles/aws/ami                  : ami 생성 task * unused
+./roles/aws/asg-elb              : Autoscaling 이용 시 사용하는 ELB 생성 task
+./roles/aws/auto-recovery        : EC2 인스턴스의 Cloudwath Autorecovery 생성 task
+./roles/aws/auto-scale           : Autoscaling luanch config, Autoscaling group 생성 task
+./roles/aws/EC2                  : EC2 인스턴스 생성 task
+./roles/aws/eip                  : EC2 인스턴스에 elastic ip attach task
+./roles/aws/elb                  : Autoscaling 없이 단독으로 EC2만 생성할 경우 사용하는 ELB 생성 task
+./roles/aws/iam-groups           : iam group 생성 task
+./roles/aws/iam-roles            : iam role 생성 task
+./roles/aws/sg                   : Security Group 생성 task
+./roles/aws/sns                  : SNS Topic 생성 task
+
+./roles/modules                  : 미들웨어 설치 및 설정 관리 task 디렉토리
+./roles/modules/java             : JAVA 설치 task
+./roles/modules/jumphost         : jumphost(sssd) 설치 task
+./roles/modules/nginx            : nginx 설치 및 설정 관리 task
+./roles/modules/nodejs           : nodejs 설치 task
+./roles/modules/redis            : redis 설치 task
+./roles/modules/scouter-agent    : tomcat에 scouter-agent 등록 task 
+./roles/modules/scouter-host     : scouter-host 설치 task
+./roles/modules/tomcat           : tomcat 설치 및 설정 관리 task
+
+./roles/wrapper-node             : 설정 관리 task 디렉토리
+./roles/wrapper-node/files/common: 공통 설정 파일 저장 디렉토리
+./roles/wrapper-node/files/hosts : 각 호스트별 설정 파일 저장 디렉토리 (태그네임 기준)
+
+./roles/deploy                   : Autoscaling Callback 시 웹 소스를 배포하는 task 디렉토리
+./roles/deploy/deploy_app        : Tomat War 파일 배포 task
+./roles/deploy/deploy_web        : Nginx 웹 소스 배포 task

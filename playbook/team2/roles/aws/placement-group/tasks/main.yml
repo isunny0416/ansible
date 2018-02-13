@@ -1,0 +1,11 @@
+---
+# roles/aws/placement-group/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Create Placement group - AWS-CLI
+  command: 'aws ec2 create-placement-group --region {{ region }} --group-name {{ tag_name }} --strategy cluster'
+  register: result
+  ignore_errors: True
+
+- debug: msg="{{ tag_name }} placement group is already exists"
+  when: "'already exists' in result.stderr"

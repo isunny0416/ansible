@@ -1,0 +1,25 @@
+---
+# file: stg-logstash.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: stg-logstash
+    instance_type: t2.micro
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet30 }}" }
+
+- name: Configure instance(s)
+  hosts: tag_Name_stg-logstash
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: stg-logstash
+  roles:
+    - { role: modules/logstash }
+    - { role: wrapper-node }

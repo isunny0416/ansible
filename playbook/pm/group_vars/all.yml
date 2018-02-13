@@ -1,0 +1,9 @@
+---
+# file: group_vars/all.yml
+
+# Web Server Port
+web_port: 2080
+
+# pm info
+period:
+reason:

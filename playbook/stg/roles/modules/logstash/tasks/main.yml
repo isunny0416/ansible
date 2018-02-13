@@ -1,0 +1,22 @@
+---
+# file: roles/modules/logstash/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Install Devel Packages
+  yum: pkg="{{ item }}" state=installed
+  with_items:
+    - logstash
+    - jdk-1.8.0-oracle
+
+- name: Copy logstash common file (ex. profile.d)
+  copy: src=common/ dest=/ owner=root group=root mode=644
+  notify: restart logstash
+
+- stat: path="{{ playbook_dir }}/roles/modules/logstash/files/hosts/{{ tag_name }}"
+  register: hosts
+  delegate_to: localhost
+
+- name: Copy logstash config file
+  copy: src="hosts/{{ tag_name }}/" dest=/ owner=root group=root
+  notify: restart logstash
+  when: hosts.stat.exists

@@ -1,0 +1,22 @@
+---
+# roles/aws/auto-scale/tasks/auto-scale.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- action: ec2_facts
+
+- name: Create AWS Cloudwatch metric alarms
+  ec2_metric_alarm:
+    region: "{{ region }}"
+    name: "{{ tag_name }}-{{ item.metric }}-{{ ansible_ec2_instance_id }}"
+    state: present
+    metric: "{{ item.metric }}" # df.percent_bytes.used, memory.percent.used
+    namespace: "{{ item.namespace }}" # collectd
+    statistic: "{{ item.statistic }}" # Maximum
+    comparison: ">="
+    threshold: "{{ item.threshold }}" # 80
+    period: "{{ item.period }}"
+    evaluation_periods: "{{ item.evaluation_periods }}"
+    alarm_actions: "{{ item.sns_topic_arn }}"
+    dimensions: "{{ item.dimensions }}"
+  with_items: "{{ cw_alarm_metric }}"
+  delegate_to: localhost

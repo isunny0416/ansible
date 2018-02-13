@@ -1,0 +1,7 @@
+sg_instance:
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    group_name: "{{ tag_env }}-jumphost"
+  - proto: all
+    cidr_ip: 10.15.0.0/16

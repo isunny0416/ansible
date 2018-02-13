@@ -1,0 +1,27 @@
+{
+    "template": "hidden_search*",
+    "settings" : {
+	"refresh_interval" : "1s",
+        "number_of_shards" : 5,
+        "number_of_replicas" : 1
+    },
+    "mappings": {
+        "search_word": {
+            "dynamic_templates": [
+                {
+                    "string_template" : {
+                        "match" : "*",
+                        "mapping": { "type": "string", "index": "not_analyzed" },
+                        "match_mapping_type" : "string"
+                     }
+                 }
+             ],
+             "properties" : {
+		"userId" : { "type" : "integer" },
+                "searchWord" : { "type" : "string" , "index" : "not_analyzed" },
+                "searchType" : { "type" : "string" , "index" : "not_analyzed" },
+                "registerDate" : { "type" : "long" }
+            }
+        }
+    }
+}

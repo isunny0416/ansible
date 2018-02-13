@@ -1,0 +1,11 @@
+[Unit]
+Description=Scouter Host agent
+ 
+[Service]
+Type=forking
+EnvironmentFile=/etc/sysconfig/scouter
+ExecStart=/skt/scouter/agent.host/host.sh
+ExecStop=/skt/scouter/agent.host/stop.sh
+ 
+[Install]
+WantedBy=multi-user.target

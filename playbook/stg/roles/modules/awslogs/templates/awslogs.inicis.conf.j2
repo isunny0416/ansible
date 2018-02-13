@@ -1,0 +1,31 @@
+[inicis.cancel.{{ inicis_mid }}.log]
+file = /skt/inicis/log/INIcancel_{{ inicis_mid }}_*
+buffer_duration = 5000
+log_stream_name = {instance_id}
+initial_position = start_of_file
+datetime_format = %Y-%m-%d %H:%M:%S
+log_group_name = {{ tag_name }}.INIcancel.{{ inicis_mid }}.log
+
+[inicis.repay.{{ inicis_mid }}.log]
+file = /skt/inicis/log/INIrepay_{{ inicis_mid }}_*
+buffer_duration = 5000
+log_stream_name = {instance_id}
+initial_position = start_of_file
+datetime_format = %Y-%m-%d %H:%M:%S
+log_group_name = {{ tag_name }}.INIrepay.{{ inicis_mid }}.log
+
+[inicis.subreg.{{ inicis_mid }}.log]
+file = /skt/inicis/log/INIsubreg_{{ inicis_mid }}_*
+buffer_duration = 5000
+log_stream_name = {instance_id}
+initial_position = start_of_file
+datetime_format = %Y-%m-%d %H:%M:%S
+log_group_name = {{ tag_name }}.INIsubreg.{{ inicis_mid }}.log
+
+[inicis.adjustment.{{ inicis_mid }}.log]
+file = /skt/inicis/log/INIadjustment_{{ inicis_mid }}_*
+buffer_duration = 5000
+log_stream_name = {instance_id}
+initial_position = start_of_file
+datetime_format = %Y-%m-%d %H:%M:%S
+log_group_name = {{ tag_name }}.INIadjustment.{{ inicis_mid }}.log

@@ -1,0 +1,11 @@
+---
+# file: stg-rds.yml
+
+- name: AWS rds security group provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: stg-rds
+  roles:
+    - { role: aws/sg }
+

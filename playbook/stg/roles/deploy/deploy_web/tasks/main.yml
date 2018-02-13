@@ -1,0 +1,42 @@
+---
+# file: roles/deploy/deploy_web/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- stat: path=/skt/repo/{{ tag_env }}/{{ tag_name }}/new/ROOT.tar
+  delegate_to: jenkins.sktvl.com
+  register: rs
+
+- name: stop pm2
+  service: name=pm2 state=stopped
+  when: rs.stat.exists
+
+- pause: seconds=5
+
+- name: remove old source
+  shell: rm -rf /skt/web/instance01/*
+  when: rs.stat.exists
+
+- name: source code copy
+  synchronize: src=/skt/repo/{{ tag_env }}/{{ tag_name }}/new/ROOT.tar dest=/skt/web/instance01/ROOT.tar
+  delegate_to: jenkins.sktvl.com
+  when: rs.stat.exists
+
+- name: unpack tar file
+  unarchive: src=/skt/web/instance01/ROOT.tar dest=/skt/web/instance01/ copy=no
+  when: rs.stat.exists
+
+- name: remove tar file
+  file: path=/skt/web/instance01/ROOT.tar state=absent
+  when: rs.stat.exists
+
+- name: start pm2
+  service: name=pm2 state=started
+  when: rs.stat.exists
+
+- name: wait for nodejs restart
+  wait_for: port=9000 host={{ inventory_hostname }} delay=90
+  when: rs.stat.exists
+
+- name: check siteup.html is available
+  uri: url=http://{{ inventory_hostname }}:9000{{ siteup_url }}
+  when: rs.stat.exists

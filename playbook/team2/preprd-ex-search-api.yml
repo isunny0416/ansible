@@ -1,0 +1,33 @@
+---
+# file: preprd-ex-search-api.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: preprd-ex-search-api
+    instance_type: t2.medium
+    instance_role: api-role
+    elb_conn_drain_tmout: 10
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet90 }}" }
+    - { role: aws/eip }
+
+- name: Configure instance(s)
+  hosts: tag_Name_preprd-ex-search-api
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: preprd-ex-search-api
+    awslogs: {
+      target: [ spring-boot ] # target : array, values = [ catalina, admin, api, batch, nodejs, inicis ], log target parameter
+    }
+  roles:
+    - { role: modules/java }
+    - { role: modules/spring-boot, tag_env: preprd }
+    - { role: modules/awslogs }
+    #- { role: modules/scouter-agent, scouter_server: 10.14.20.203 } # scouter_server : ip, scouter server ip
+    #- { role: modules/scouter-host, scouter_server: 10.14.20.203 } # scouter_server : ip, scouter server ip
+    - { role: wrapper-node }

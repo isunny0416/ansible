@@ -1,0 +1,28 @@
+---
+# file: prd-bi-insight.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: prd-bi-insight
+    instance_type: t2.large
+    #instance_role: api-role
+    termination_protection: yes
+    vm_per_subnet: 1
+    elb_conn_drain_tmout: 10
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    - { role: aws/elb, internal_elb: false }
+
+- name: Configure instance(s)
+  hosts: tag_Name_prd-bi-insight
+  gather_facts: False
+  vars:
+    tag_name: prd-bi-insight
+    domain: localhost
+  roles:
+    - { role: modules/nginx, api_proxy_pass: false }
+    - { role: modules/java, tag_env: dev }
+    - { role: wrapper-node }

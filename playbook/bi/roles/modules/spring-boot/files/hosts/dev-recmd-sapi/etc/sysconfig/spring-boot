@@ -1,0 +1,17 @@
+#
+# spring boot config file
+#
+
+# Environment Value
+ENV=recmd
+
+# APP Base
+APP_BASE=/skt/was/apps/instance01/webapps
+
+# Log Base
+LOG_PATH=/skt/was/apps/instance01/logs
+
+# Application Port
+PORT=9000
+
+JAVA_OPTS='-Xms1g -Xmx1g'

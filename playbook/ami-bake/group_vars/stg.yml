@@ -1,0 +1,19 @@
+---
+# file: group_vars/all.yml
+
+# Environment Variable Set
+tag_env: stg
+
+# Set Network Params
+vpc_id: vpc-4a338923
+region: ap-northeast-2
+subnet10: subnet-28149541
+subnet20: subnet-0d149564
+subnet30: subnet-0714956e
+subnet90: subnet-3f149556
+subnet120: subnet-c187468c
+subnet130: subnet-3b874676
+subnet190: subnet-ca874687
+
+# Set Instance Params
+keypair: acamp-stg

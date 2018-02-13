@@ -1,0 +1,44 @@
+# Security Group
+sg_instance:
+  - proto: tcp
+    from_port: 5306
+    to_port: 5306
+    cidr_ip: 10.14.0.0/16
+  # DBA instance
+  - proto: tcp
+    from_port: 5306
+    to_port: 5306
+    cidr_ip: 10.10.10.243/32
+  # DBA VPN
+  - proto: tcp
+    from_port: 5306
+    to_port: 5306
+    cidr_ip: 10.10.190.229/32 
+
+# TODO: TEMP ACL - QA request
+  - proto: tcp
+    from_port: 5306
+    to_port: 5306
+    cidr_ip: 10.10.10.16/32
+  - proto: tcp
+    from_port: 5306
+    to_port: 5306
+    cidr_ip: 10.10.190.50/32
+  - proto: tcp
+    from_port: 5306
+    to_port: 5306
+    cidr_ip: 10.10.90.193/32
+# for QA qutomation
+  - proto: tcp
+    from_port: 5306
+    to_port: 5306
+    group_name: stg-qa
+  - proto: tcp
+    from_port: 5306
+    to_port: 5306
+    cidr_ip: 10.10.90.58/32
+# TODO: MUST DELETE on 10/27 ... VPN
+  - proto: tcp
+    from_port: 5306
+    to_port: 5306
+    cidr_ip: 10.10.90.218/32

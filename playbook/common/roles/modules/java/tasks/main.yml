@@ -1,0 +1,15 @@
+---
+# file: roles/modules/java/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Install Devel Packages
+  yum: pkg="{{ item }}" state=installed
+  with_items:
+    - jdk-1.8.0-oracle
+#  when: tag_env != "prd"
+
+#- name: Install Devel Packages
+#  yum: pkg="{{ item }}" state=installed
+#  with_items:
+#    - jre-1.8.0-oracle
+#  when: tag_env == "prd"

@@ -1,0 +1,5 @@
+---
+# file: roles/modules/elasticsearch/handlers/main.yml
+
+- name: restart filebeat
+  service: name=filebeat enabled=yes state=restarted

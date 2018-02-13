@@ -1,0 +1,5 @@
+---
+# file: roles/modules/awslogs/handlers/main.yml
+
+- name: restart awslogs
+  service: name=awslogs enabled=yes state=restarted

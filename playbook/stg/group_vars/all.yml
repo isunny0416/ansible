@@ -1,0 +1,115 @@
+---
+# file: group_vars/all.yml
+
+# Environment Variable Set
+tag_env: stg
+aws_profile: "{{ lookup('env', 'AWS_PROFILE') }}"
+siteup_url: /siteup.html
+
+# EC2 Variable Set
+placement_group:
+
+# Set Network Params
+vpc_id: vpc-4a338923
+region: ap-northeast-2
+subnet10: subnet-28149541
+subnet20: subnet-0d149564
+subnet30: subnet-0714956e
+subnet90: subnet-3f149556
+subnet110:
+subnet120: subnet-c187468c
+subnet130: subnet-3b874676
+subnet190: subnet-ca874687
+
+# AD Auth Group
+ldap_access_cn: qa
+
+# Set ELB
+elbs: [] # Auto Scaling ELB LIST (default null)
+ssl_certificate_id: arn:aws:acm:ap-northeast-2:118219724180:certificate/fdfd9664-3b68-414e-9287-0835ca456105
+access_logs:
+  interval: 5 # minutes
+  s3_location: "tvalley-elb-access-log"
+  s3_prefix: "{{ tag_name }}"
+elb_subnets:
+  - "{{ subnet90 }}"
+  - "{{ subnet190 }}"
+interal_elb_subnets:
+  - "{{ subnet20 }}"
+  - "{{ subnet120 }}"
+
+# Global External ELB Listeners, Health Check
+ext_elb_listeners:
+  - protocol: http
+    load_balancer_port: 80
+    instance_protocol: http
+    instance_port: 2080
+  - protocol: https
+    load_balancer_port: 443
+    instance_protocol: http
+    instance_port: 2080
+    ssl_certificate_id: "{{ ssl_certificate_id }}"
+
+health_check_ext_elb: {
+  ping_protocol: http,
+  ping_port: 2080,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Global Internal ELB Listeners, Health Check
+int_elb_listeners:
+  - protocol: http
+    load_balancer_port: 9000
+    instance_protocol: http
+    instance_port: 9000
+
+health_check_int_elb: {
+  ping_protocol: http,
+  ping_port: 9000,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Set Auto Scaling Notificate Configure Default value
+asg_sns_topic:
+asg_notification_types: []
+
+# Set Auto Scaling scheduled Configure Default value
+scheduled: false
+
+# Set SNS Topic
+## Auto Recovery
+auto_recovery_sns:
+  name: auto-recovery
+  subscriptions:
+    - endpoint: aws-tvalley-stg@sktechx.com
+      protocol: email
+## Auto Scaling
+auto_scaling_sns:
+  name: send-email
+  subscriptions:
+    - endpoint: aws-tvalley-stg@sktechx.com
+      protocol: email
+
+# Aws logs
+awslogs: {
+  target: [] # target : array, values = [ catalina, admin, api, batch, nodejs ], log target parameter
+}
+
+# Set Instance Params
+image: ami-1839e976
+keypair: acamp-stg
+instance_role:
+termination_protection: yes
+volumeinfo:
+  - device_name: /dev/sda1
+    volume_size: 30
+    device_type: gp2
+    delete_on_termination: "true"

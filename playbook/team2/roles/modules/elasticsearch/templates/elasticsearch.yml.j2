@@ -1,0 +1,79 @@
+cluster.name: {{ cluster_name }}
+node.name: {{ node_name }}
+node.master: true
+node.data: true
+
+network.bind_host: 0.0.0.0
+network.publish_host: 0.0.0.0
+http.port: {{ http_port }} # 11200
+transport.tcp.port: {{ tcp_port }} # 11300
+
+index.number_of_shards: {{ number_of_shards }} # 5
+index.number_of_replicas: {{ number_of_replicas }} # 1
+
+bootstrap.mlockall: true
+
+discovery.zen.minimum_master_nodes: {{ minimum_master_nodes }} # 2
+discovery.zen.ping_interval: 5s
+discovery.zen.ping_timeout: 30s
+discovery.zen.ping_retries: 3
+
+cluster.routing.allocation.node_initial_primaries_recoveries: {{ node_initial_primaries_recoveries }} # 5
+cluster.routing.allocation.node_concurrent_recoveries: {{ node_concurrent_recoveries }} # 4
+cluster.routing.allocation.allow_rebalance: "indices_all_active"
+cluster.routing.allocation.enable: "all" # all, primaries, new_primaries, none
+indices.recovery.concurrent_streams: {{ concurrent_streams }} # 5
+
+gateway.recover_after_nodes: {{ recover_after_nodes }} # 1
+gateway.expected_nodes: {{ expected_nodes }} # 2
+gateway.recover_after_time: 1m
+
+# Thread pool
+#threadpool.search.type: fixed
+#threadpool.search.size: 120
+#threadpool.search.queue_size: -1
+#threadpool.get.type: fixed
+#threadpool.get.size: 120
+#threadpool.get.queue_size: -1
+#threadpool.suggest.type: fixed
+#threadpool.suggest.size: 24
+#threadpool.suggest.queue_size: 1000
+#threadpool.percolate.type: fixed
+#threadpool.percolate.size: 24
+#threadpool.percolate.queue_size: 1000
+#threadpool.bulk.type: fixed
+#threadpool.bulk.size: 24
+#threadpool.bulk.queue_size: -1
+#threadpool.index.type: fixed
+#threadpool.index.size: 120
+#threadpool.index.queue_size: -1
+threadpool.refresh.size: 10
+
+# Indices settings
+indices.memory.index_buffer_size: 30%
+indices.memory.min_shard_index_buffer_size: 12mb
+indices.memory.min_index_buffer_size: 96mb
+
+# Cache Sizes
+indices.fielddata.cache.size: 20%
+indices.cache.filter.size: 20%
+indices.cache.filter.expire: 15m
+
+# Indexing Settings for Writes
+index.refresh_interval: 60s
+index.translog.flush_threshold_ops: 50000
+index.query.bool.max_clause_count: 10240
+
+index.store.type: "mmapfs"
+index.translog.fs.type: simple
+action.replication_type: async
+action.disable_shutdown: true
+action.disable_delete_all_indices: true
+
+# Unicast Discovery (disable multicast)
+discovery.zen.ping.multicast.enabled: false
+discovery.zen.ping.unicast.hosts : [ {{ unicast_hosts }} ]
+
+# Enabling dynamic scripting
+script.inline: true
+script.indexed: true

@@ -1,0 +1,31 @@
+---
+# file: stg-jumphost.yml
+
+- include: common.yml
+
+- name: AWS jumphost instance provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: stg-jumphost
+    instance_type: t2.micro
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet10 }}" }
+    # Auto Recovery notification is generated when you create a sns
+    - { role: aws/sns, sns: "{{ auto_recovery_sns }}" }
+    - { role: aws/auto-recovery }
+
+- name: Configure instance(s)
+  hosts: tag_Name_stg-jumphost
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: stg-jumphost
+    domain: localhost
+  roles:
+    - { role: modules/jumphost }
+    - { role: wrapper-node }

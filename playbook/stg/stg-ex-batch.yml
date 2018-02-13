@@ -1,0 +1,34 @@
+---
+# file: stg-ex-batch.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: stg-ex-batch
+    instance_type: c4.xlarge
+    instance_role: api-role
+    termination_protection: yes
+    elb_conn_drain_tmout: 10
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    # Auto Recovery notification is generated when you create a sns
+    - { role: aws/sns, sns: "{{ auto_recovery_sns }}" }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    
+- name: Configure instance(s)
+  hosts: tag_Name_stg-ex-batch
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: stg-ex-batch
+    jenkins_secret: "2315077265439e2f3c59facc67113849d2c35051a6f3d33193389161d6b3f44b"
+    awslogs: {
+      target: [ batch ] # target : array, values = [ catalina, admin, api, batch, nodejs ], log target parameter
+    }
+  roles:
+    - { role: modules/java }
+    - { role: modules/jenkins-slave }
+    - { role: modules/awslogs }
+    - { role: wrapper-node }

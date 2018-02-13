@@ -1,0 +1,3 @@
+subnet_id: "{{ subnet10 }}"
+tags:
+  Name: "{{ tag_name }}"

@@ -1,0 +1,8 @@
+---
+# file: prd-deploy.yml
+
+- name: deploy
+  hosts: "{{ tag_name | regex_replace('^','tag_Name_') }}"
+  serial: 1
+  roles:
+    - { role: "deploy/deploy_{{ target }}" }

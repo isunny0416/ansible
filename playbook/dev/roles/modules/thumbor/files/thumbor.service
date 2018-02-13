@@ -1,0 +1,16 @@
+[Unit]
+Description=Thumbor service
+Before=nginx.service
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+#Type=forking
+Type=simple
+User=root
+EnvironmentFile=/etc/sysconfig/thumbor
+ExecStart=/usr/bin/python /usr/bin/thumbor -p ${PORT} -c ${CONF_FILE}
+#ExecStart=/usr/bin/thumbor -p 9000 -c /home/skt/thumbor/thumbor.conf
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

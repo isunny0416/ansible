@@ -1,0 +1,2 @@
+%acamp	ALL=(ALL)	NOPASSWD: /bin/su - skt
+skt		ALL=(ALL)	NOPASSWD: ALL

@@ -1,0 +1,166 @@
+# Local External ELB Listeners, Health Check For Nginx
+ext_elb_listeners:
+  - protocol: https # Nginx External
+    load_balancer_port: 443
+    instance_protocol: http
+    instance_port: 2080
+    ssl_certificate_id: "{{ ssl_certificate_id }}"
+
+health_check_ext_elb: {
+  ping_protocol: http,
+  ping_port: 2080,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Local Internal ELB Listeners, Health Check
+int_elb_listeners:
+  - protocol: http # Nginx Internal
+    load_balancer_port: 80
+    instance_protocol: http
+    instance_port: 2080
+  - protocol: http # API Internal
+    load_balancer_port: 9000
+    instance_protocol: http
+    instance_port: 9000
+
+health_check_int_elb: {
+  ping_protocol: http,
+  ping_port: 2080,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Auto Scaling Metrix
+asg_min_size: 1
+asg_max_size: 1
+asg_desired_capacity: 1
+asg_az:
+  - "ap-northeast-2a"
+  - "ap-northeast-2c"
+vpc_zone_identifier:
+  - "{{ subnet20 }}"
+  - "{{ subnet120 }}"
+scale_down_adj: -1
+scale_up_adj: 1
+alarm_metric: {
+  "metric": "CPUUtilization",
+  "unit": "Percent",
+  "alarm_down_threshold": 20.0,
+  "alarm_up_threshold": 70.0
+}
+asg_notification_types:
+  - "autoscaling:EC2_INSTANCE_LAUNCH"
+  - "autoscaling:EC2_INSTANCE_LAUNCH_ERROR"
+  - "autoscaling:EC2_INSTANCE_TERMINATE"
+  - "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+assign_public_ip: no
+
+# Security Group
+sg_elb:
+  - proto: tcp # T-Tower Wired
+    from_port: 443
+    to_port: 443
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 443
+    to_port: 443
+    cidr_ip: 203.236.9.0/24
+    # stg-qa
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.78.122.12/32
+    # common zone NAT
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.78.10.248/32
+  - proto: icmp
+    from_port: 8
+    to_port: -1
+    cidr_ip: 52.78.10.248/32
+  - proto: tcp # nGrinder.agent
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.78.153.132/32
+  - proto: tcp # nGrinder.agent
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.78.153.228/32
+  - proto: tcp # nGrinder.agent
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.78.179.29/32
+  - proto: tcp # nGrinder.agent
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.79.80.111/32
+  - proto: tcp # VPN EIP
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.79.50.145/32
+
+sg_internal_elb:
+  - proto: tcp # VPN
+    from_port: 80
+    to_port: 80
+    cidr_ip: 10.10.90.218/32
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    group_name: "stg-ex-web"
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    group_name: "stg-ex-api"
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    group_name: "stg-ex-admin"
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    group_name: "stg-ex-batch"
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    group_name: "stg-ex-biz"
+  # MUST DELETE
+  - proto: tcp
+    from_port: 9000
+    to_port: 9000
+    group_name: "stg-ex-web"
+
+sg_instance:
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    group_name: "{{ tag_env }}-jumphost"
+  - proto: tcp
+    from_port: 2080
+    to_port: 2080
+    group_name: "{{ tag_name }}-elb"
+  - proto: tcp
+    from_port: 2080
+    to_port: 2080
+    group_name: "{{ tag_name }}-internal-elb"
+  - proto: tcp
+    from_port: 9000
+    to_port: 9000
+    cidr_ip: 10.10.90.58/32
+  - proto: tcp
+    from_port: 9000
+    to_port: 9000
+    group_name: stg-qa
+# TODO: MUST DELETE (for ngrinder monitor port)
+  - proto: tcp
+    from_port: 13243
+    to_port: 13243
+    cidr_ip: 10.10.10.16/32

@@ -1,0 +1,19 @@
+# vhosts_mntin.conf
+#
+server {
+  listen    {{ web_port }} default_server backlog=65535;
+  server_name {{ domain }};
+  root    /home/httpd/vhosts/localhost;
+  charset utf-8;
+  index   index.html;
+  
+  error_page 404 https://$server_name;
+
+  access_log  off;
+  
+  set $redirect_flag false;
+  if ($http_x_forwarded_proto != "https") { set $redirect_flag true; }
+  if ($host != $server_name) { set $redirect_flag true; }
+  if ($redirect_flag = true) { return 301 https://$server_name; }
+
+}

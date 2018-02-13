@@ -1,0 +1,10 @@
+---
+# file: pmout.yml
+# ex ansible-playbook pmout-nginx.yml -e "tag_name=prd-ex-admin"
+
+- name: Service PM OUT
+  hosts: "{{ tag_name | regex_replace('^', 'tag_Name_') }}"
+  vars_files:
+    - "../{{ lookup('env', 'AWS_PROFILE') }}/group_vars/all.yml"
+  roles:
+    - { role: pm/out/nginx }

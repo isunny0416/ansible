@@ -1,0 +1,14 @@
+---
+# file: dev-common.yml
+
+- name: AWS common security group provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: common
+  roles:
+    - { role: aws/sg }
+    - { role: aws/iam-roles, roles_name: api-role }
+    - { role: aws/iam-roles, roles_name: cloudwatch-logs-role }
+
+    

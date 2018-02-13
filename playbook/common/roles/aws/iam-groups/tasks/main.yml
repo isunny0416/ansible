@@ -1,0 +1,20 @@
+---
+# file: roles/aws/iam-group/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Create IAM groups
+  iam:
+    iam_type: group
+    name: "{{ groups_name }}"
+    state: present
+ 
+- name: Craet {{ groups_name }} role policies
+  iam_policy:
+    iam_type: group
+    iam_name: "{{ groups_name }}"
+    policy_name: "{{ item | basename | regex_replace('.json$', '') }}"
+    policy_document: "{{ item }}"
+    skip_duplicates: yes
+    state: present
+  with_fileglob:
+    - "policies/{{ groups_name }}/*.json"

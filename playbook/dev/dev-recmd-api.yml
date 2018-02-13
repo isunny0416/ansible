@@ -1,0 +1,34 @@
+---
+# file: dev-recmd-api.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: dev-recmd-api
+    instance_type: t2.medium
+    instance_role: api-role
+    termination_protection: yes
+    vm_per_subnet: 1
+    elb_conn_drain_tmout: 10
+  roles:
+    # tag_name : string, tag name of dependency security group
+    - { role: aws/sg, tag_name: "dev-recmd-web" }
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    - { role: aws/ext-elb } # For Nginx Gateway
+    - { role: aws/int-elb }
+
+- name: Configure instance(s)
+  hosts: tag_Name_dev-recmd-api
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: dev-recmd-api
+    domain: dev-recmd-api.sktvl.net
+  roles:
+    - { role: modules/nginx }
+    - { role: modules/java }
+    # enable_scouter : boolean, Enable Scouter Agent, true=regist scouter angent, false=skip
+    - { role: modules/tomcat, enable_scouter: false }
+    - { role: wrapper-node }

@@ -1,0 +1,99 @@
+---
+# roles/aws/auto-scale/tasks/auto-scale.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Create AWS Autoscaling Launch Configurations
+  ec2_lc:
+    name: "{{ tag_name }}-{{ lcver }}"
+    image_id: "{{ image }}"
+    key_name: "{{ keypair }}"
+    region: "{{ region }}"
+    security_group_names: [ "common", "{{ tag_name }}" ]
+    instance_type: "{{ instance_type }}"
+    instance_profile_name: "{{ instance_role }}"
+    volumes: "{{ volumeinfo }}"
+    assign_public_ip: "{{ assign_public_ip }}" # no
+    instance_monitoring: yes
+    user_data: "{{ userdata }}"
+
+- set_fact: asg_sns_topic="{{ sns_topic.sns_arn }}"
+  when: sns_topic.sns_arn is defined
+
+- name: Create AWS Autoscaling Groups
+  ec2_asg:
+    name: "{{ tag_name }}"
+    region: "{{ region }}"
+    replace_all_instances: no
+    load_balancers: "{{ elbs }}"
+    availability_zones: "{{ asg_az }}"
+    launch_config_name: "{{ tag_name }}-{{ lcver }}"
+    min_size: "{{ asg_min_size }}"
+    max_size: "{{ asg_max_size }}"
+    desired_capacity: "{{ asg_desired_capacity }}"
+    health_check_period: 300
+    vpc_zone_identifier: "{{ vpc_zone_identifier }}" # [ "{{ subnet20 }}", "{{ subnet120 }}" ]
+    termination_policies: OldestInstance
+    sns_topic: "{{ asg_sns_topic }}"
+    notification_types: "{{ asg_notification_types }}"
+    tags:
+      - Env: "{{ tag_env }}"
+      - Name: "{{ tag_name }}"
+
+- name:  Create AWS scaling policies for Autoscaling groups
+  ec2_scaling_policy:
+    region: "{{ region }}"
+    name: "{{ item.name }}"
+    asg_name: "{{ tag_name }}"
+    state: present
+    adjustment_type: "{{ item.adjustment_type }}"
+    scaling_adjustment: "{{ item.scaling_adjustment }}"
+    cooldown: "{{ item.cooldown }}"
+  with_items:
+    - name: "{{ tag_name }}-scaleup"
+      adjustment_type: "ChangeInCapacity"
+      scaling_adjustment: "{{ scale_up_adj }}"
+      cooldown: 300
+    - name: "{{ tag_name }}-scaledown"
+      adjustment_type: "ChangeInCapacity"
+      scaling_adjustment: "{{ scale_down_adj }}"
+      cooldown: 300
+  register: asg_policy
+
+- name: Create AWS Cloudwatch metric alarms for api
+  ec2_metric_alarm:
+    region: "{{ region }}"
+    name: "{{ item.name }}"
+    state: present
+    metric: "{{ alarm_metric.metric }}"
+    namespace: "AWS/EC2"
+    statistic: "Average"
+    comparison: "{{ item.comparison }}"
+    threshold: "{{ item.threshold }}"
+    period: 60
+    evaluation_periods: 5
+    unit: "{{ alarm_metric.unit }}"
+    dimensions: { "AutoScalingGroupName": "{{ tag_name }}" }
+    alarm_actions: "{{ item.alarm_actions }}"
+    ok_actions: "{{ item.ok_actions }}"
+  with_items:
+    - name: "{{ tag_name }}-scaleup"
+      comparison: ">="
+      threshold: "{{ alarm_metric.alarm_up_threshold }}"
+      alarm_actions: "{{ asg_policy.results[0].arn }}"
+      ok_actions: []
+    - name: "{{ tag_name }}-scaledown"
+      comparison: "<="
+      threshold: "{{ alarm_metric.alarm_down_threshold }}"
+      alarm_actions: []
+      ok_actions: "{{ asg_policy.results[1].arn }}"
+
+- name: Set Auto Scaling Schedule - AWS-CLI
+  command: 'aws autoscaling put-scheduled-update-group-action 
+            --region {{ region }}
+            --auto-scaling-group-name {{ tag_name }}
+            --scheduled-action-name {{ tag_name }}
+            --recurrence "{{ asg_schedule }}"
+            --desired-capacity {{ asg_schedule_desired_capacity }}
+            --min-size {{ asg_min_size }}
+            --max-size {{ asg_max_size }}'      
+  when: scheduled

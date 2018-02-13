@@ -1,0 +1,10 @@
+---
+# file: sg.yml
+# ex ansible-playbook pmout-sg.yml -e "tag_name=prd-rds"
+
+- name: Service PM OUT
+  hosts: localhost
+  vars_files:
+    - "../{{ lookup('env', 'AWS_PROFILE') }}/group_vars/all.yml"
+  roles:
+    - { role: pm/out/sg }

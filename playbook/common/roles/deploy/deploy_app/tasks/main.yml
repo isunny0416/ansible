@@ -1,0 +1,28 @@
+---
+# file: roles/deploy/deploy_app/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- stat: path=/skt/repo/{{ tag_env }}/{{ tag_name }}/new/ROOT.war
+  delegate_to: jenkins.sktvl.com
+  register: rs
+
+- name: stop tomcat
+  service: name=tomcat state=stopped
+  when: rs.stat.exists
+
+- name: deploy webapps
+  synchronize: src=/skt/repo/{{ tag_env }}/{{ tag_name }}/new/ROOT.war dest=/skt/was/apps/instance01/webapps/ROOT.war
+  delegate_to: jenkins.sktvl.com
+  when: rs.stat.exists
+
+- name: start tomcat
+  service: name=tomcat state=started
+  when: rs.stat.exists
+
+- name: wait for tomcat restart
+  wait_for: port=9000 host={{ inventory_hostname }} delay=90
+  when: rs.stat.exists
+
+- name: check siteup.html is available
+  uri: url=http://{{ inventory_hostname }}:9000{{ siteup_url }}
+  when: rs.stat.exists

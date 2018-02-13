@@ -1,0 +1,30 @@
+---
+# file: prd-ex-webcom.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: prd-ex-webcom
+    instance_type: t2.micro
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet90 }}" }
+    - { role: aws/eip }
+
+- name: Configure instance(s)
+  hosts: tag_Name_prd-ex-webcom
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: prd-ex-webcom
+    domain: www.hiddenx.com
+  roles:
+    - { role: aws/cloudwatch-alarm }
+    # api_proxy_pass : boolean, true=add proxy_pass internal api in vhosts.conf, false=skip
+    # api_name : string, api instance tag name
+    - { role: modules/nginx }
+    - { role: wrapper-node }

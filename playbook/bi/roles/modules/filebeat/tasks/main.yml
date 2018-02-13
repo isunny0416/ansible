@@ -1,0 +1,12 @@
+---
+# file: roles/modules/elasticsearch/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Install Devel Packages
+  yum: pkg="{{ item }}" state=installed
+  with_items:
+    - filebeat
+
+- name: copy config filebeat
+  template: src=filebeat.yml.j2 dest=/etc/filebeat/filebeat.yml owner=root group=root mode=644
+  notify: restart filebeat

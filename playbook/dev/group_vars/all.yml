@@ -1,0 +1,96 @@
+---
+# file: group_vars/all.yml
+
+# Environment Variable Set
+tag_env: dev
+aws_profile: "{{ lookup('env', 'AWS_PROFILE') }}"
+siteup_url: /siteup.html
+
+# EC2 Variable Set
+placement_group:
+
+# Set Network Params
+vpc_id: vpc-85a810ec
+region: ap-northeast-2
+subnet10: subnet-81b236e8
+subnet20: subnet-61b33708
+subnet30: subnet-64b3370d
+subnet90: subnet-9bb236f2
+subnet110:
+subnet120:
+subnet130: subnet-8c995dc1
+subnet190:
+
+# AD Auth Group
+ldap_access_cn: develop
+
+# Set ELB
+elbs: [] # Auto Scaling ELB LIST (default null)
+ssl_certificate_id: arn:aws:acm:ap-northeast-2:632235194879:certificate/bbf1e9ed-7482-4897-abe7-6dc914dd8156
+access_logs:
+elb_subnets:
+  - "{{ subnet90 }}"
+interal_elb_subnets:
+  - "{{ subnet20 }}"
+
+# Global External ELB Listeners, Health Check
+ext_elb_listeners:
+  - protocol: http
+    load_balancer_port: 80
+    instance_protocol: http
+    instance_port: 2080
+  - protocol: https
+    load_balancer_port: 443
+    instance_protocol: http
+    instance_port: 2080
+    ssl_certificate_id: "{{ ssl_certificate_id }}"
+
+health_check_ext_elb: {
+  ping_protocol: http,
+  ping_port: 2080,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Global Internal ELB Listeners, Health Check
+int_elb_listeners:
+  - protocol: http
+    load_balancer_port: 9000
+    instance_protocol: http
+    instance_port: 9000
+
+health_check_int_elb: {
+  ping_protocol: http,
+  ping_port: 9000,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Set Auto Scaling Notificate Configure Default value
+asg_sns_topic:
+asg_notification_types: []
+
+# Set Auto Scaling scheduled Configure Default value
+scheduled: false
+
+# Aws logs
+awslogs: {
+  target: [] # target : array, values = [ catalina, admin, api, batch, nodejs ], log target parameter
+}
+
+# Set Instance Params
+image: ami-1839e976
+keypair: acamp_dev
+instance_role:
+termination_protection: yes
+volumeinfo:
+  - device_name: /dev/sda1
+    volume_size: 30
+    device_type: gp2
+    delete_on_termination: "true"

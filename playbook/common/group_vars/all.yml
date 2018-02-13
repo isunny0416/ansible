@@ -1,0 +1,25 @@
+---
+# file: group_vars/all.yml
+
+# Environment Variable Set
+aws_profile: "{{ lookup('env', 'AWS_PROFILE') }}"
+
+# EC2 Variable Set
+placement_group:
+
+# Set Network Params
+vpc_id: vpc-729a691b
+region: ap-northeast-2
+subnet10: subnet-a4906dcd
+subnet20:
+subnet30:
+subnet50: subnet-2ee32547
+subnet90: subnet-4ce62125
+subnet110: subnet-52e1dc18
+subnet120:
+subnet130:
+subnet190: subnet-829592c8
+
+# Set Instance Params
+image: ami-1839e976
+ 

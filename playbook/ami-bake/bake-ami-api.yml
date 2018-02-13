@@ -1,0 +1,30 @@
+---
+# Provisional pending
+# file: back-ami.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: True
+  vars:
+    lcver: "{{ ansible_date_time.epoch }}"
+    vm_per_subnet: 1
+    instance_type: t2.micro
+  roles:
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+
+- name: Configure instance(s)
+  hosts: launched
+  gather_facts: False
+  roles:
+    - { role: deploy_app }
+
+- name: Bake ami image
+  hosts: localhost
+  gather_facts: True
+  vars:
+    lcver: "{{ ansible_date_time.epoch }}"
+    instance_type: c4.large
+    instance_role: api-role
+  roles:
+    - { role: aws/ami }
+    - { role: aws/auto-scale }

@@ -1,0 +1,30 @@
+---
+# file: prd-es.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: prd-es
+    instance_type: t2.medium
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 3
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet30 }}" }
+
+- name: Configure instance(s)
+  hosts: tag_Name_prd-es
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: prd-es
+  pre_tasks:
+    - name: Set elasticsearch unicast_hosts variable
+      set_fact: unicast_hosts="{{ groups['tag_Name_prd-es'] | join(':11300\", \"') | regex_replace('^', '\"') | regex_replace('$', ':11300\"') }}"
+      delegate_to: localhost
+  roles:
+    - { role: aws/cloudwatch-alarm }
+    - { role: modules/elasticsearch }
+    - { role: wrapper-node }

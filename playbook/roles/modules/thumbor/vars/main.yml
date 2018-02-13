@@ -1,0 +1,4 @@
+---
+# file: roles/modules/thumbor/vars/main.yml
+
+was_port: 9000

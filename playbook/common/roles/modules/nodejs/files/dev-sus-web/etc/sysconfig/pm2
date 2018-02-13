@@ -1,0 +1,15 @@
+#
+# nodejs pm2 config file
+#
+
+# Environment Value
+ENV=recmd
+
+# NodeJS Doc Base
+CWD=/skt/web/instance01
+
+# NodeJS Log Base
+LOG=/skt/web/logs
+
+# NodeJS Start Config File
+CONF_FILE=/skt/web/instance01/pm2conf.json

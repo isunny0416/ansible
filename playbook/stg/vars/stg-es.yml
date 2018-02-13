@@ -1,0 +1,33 @@
+# Security Groups
+sg_instance:
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    group_name: "{{ tag_env }}-jumphost"
+  - proto: tcp
+    from_port: 11200
+    to_port: 11200
+    cidr_ip: 10.14.0.0/16
+  - proto: tcp
+    from_port: 11300
+    to_port: 11300
+    cidr_ip: 10.14.0.0/16
+  # VPN
+  - proto: tcp
+    from_port: 11200
+    to_port: 11200
+    cidr_ip: 10.10.90.218/32
+  - proto: tcp
+    from_port: 11300
+    to_port: 11300
+    cidr_ip: 10.10.90.218/32
+  # Jenkins
+  - proto: tcp
+    from_port: 11200
+    to_port: 11200
+    cidr_ip: 10.10.90.58/32
+  # Jenkins
+  - proto: tcp
+    from_port: 11300
+    to_port: 11300
+    cidr_ip: 10.10.90.58/32

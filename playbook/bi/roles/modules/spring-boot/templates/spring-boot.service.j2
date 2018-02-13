@@ -1,0 +1,14 @@
+[Unit]
+Description=T-Valley Spring boot
+After=syslog.target network.target
+
+[Service]
+User=nobody
+
+EnvironmentFile=/etc/sysconfig/spring-boot
+
+ExecStart=/usr/lib/jvm/default/bin/java $JAVA_OPTS -jar -Dspring.profiles.active=${ENV} -Dlogging.file=${LOG_PATH}/spring-boot.log -Dserver.port=${PORT} ${APP_BASE}/ROOT.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

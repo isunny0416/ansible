@@ -1,0 +1,5 @@
+---
+# file: roles/modules/logstash/handlers/main.yml
+
+- name: restart logstash
+  service: name=logstash enabled=yes state=restarted

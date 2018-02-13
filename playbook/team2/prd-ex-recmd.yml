@@ -1,0 +1,29 @@
+---
+# file: prd-ex-recmd.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: prd-ex-recmd
+    instance_type: m4.large
+    instance_role: api-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    # tag_name : string, tag name of dependency security group
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+
+- name: Configure instance(s)
+  hosts: tag_Name_prd-ex-recmd
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: prd-ex-recmd
+    jenkins_secret: "2f64ae44f8b693136accd3d953920be357b9c97dccfc48212b01ee00b963c088"
+  roles:
+    - { role: aws/cloudwatch-alarm }
+    - { role: modules/java }
+    - { role: modules/jenkins-slave }
+    - { role: wrapper-node }

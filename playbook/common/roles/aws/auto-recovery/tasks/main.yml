@@ -1,0 +1,23 @@
+---
+# roles/aws/auto-recovery/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Create AWS Cloudwatch metric alarms for Autorecovery
+  ec2_metric_alarm:
+    region: "{{ region }}"
+    name: "{{ tag_name }}-auto-recovery"
+    state: present
+    metric: "StatusCheckFailed_System"
+    namespace: "AWS/EC2"
+    statistic: "Maximum"
+    comparison: ">="
+    threshold: 1.0
+    period: 60
+    evaluation_periods: 2
+    dimensions: { "InstanceId": "{{ item.id }}" }
+    alarm_actions: [
+      "arn:aws:automate:{{ region }}:ec2:recover",
+      "{{ sns_topic.sns_arn }}"
+    ]
+  with_items:
+    - "{{ ec2.tagged_instances }}"

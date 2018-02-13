@@ -1,0 +1,32 @@
+---
+# file: dev-susweb.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: dev-sus-web
+    instance_type: t2.micro
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 1
+    elb_conn_drain_tmout: 10
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    # internal_elb : boolean, true=create internal api, false=skip
+    #- { role: aws/elb, internal_elb: false }
+
+- name: Configure instance(s)
+  hosts: tag_Name_dev-sus-web
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: dev-sus-web
+    domain: www-sus.sktvl.net
+  roles:
+    # api_proxy_pass : boolean, true=add proxy_pass internal api in vhosts.conf, false=skip
+    # api_name : string, api instance tag name 
+    - { role: modules/nginx, api_proxy_pass: false, api_name: dev-ex-api }
+    - { role: modules/nodejs }
+    - { role: wrapper-node }

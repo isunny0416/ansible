@@ -1,0 +1,21 @@
+---
+# file: roles/modules/spring-boot/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- stat: path="{{ playbook_dir }}/roles/modules/spring-boot/files/hosts/{{ tag_name }}"
+  register: hosts
+  delegate_to: localhost
+
+- name: Copy spring-boot.service systemd script file
+  template: src=spring-boot.service.j2 dest="/usr/lib/systemd/system/spring-boot.service" owner=root group=root mode=644
+  notify: daemon reload
+
+- name: Create spring boot local config file - hosts config
+  copy: src="hosts/{{ tag_name }}/" dest=/ owner=root group=root
+  notify: restart spring-boot
+  when: hosts.stat.exists
+
+- name: Copy spring-boot config
+  template: src=spring-boot.j2 dest="/etc/sysconfig/spring-boot" owner=root group=root mode=644
+  notify: restart spring-boot
+  when: not hosts.stat.exists

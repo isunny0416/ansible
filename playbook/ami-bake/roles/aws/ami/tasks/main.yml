@@ -1,0 +1,38 @@
+---
+# file: roles/aws/ami/tasks/main.yml
+- include_vars: "group_vars/{{ lookup('env', 'AWS_PROFILE') }}.yml"
+
+- name: create an instance in ami
+  ec2_ami:
+    region: "{{ region }}"
+    instance_id: "{{ item.id }}"
+    wait: yes
+    name: "{{ tag_name }}-{{ lcver }}"
+    tags:
+      Env: "{{ tag_env }}"
+      Name: "{{ tag_name }}-{{ lcver }}"
+  register: ami
+  with_items: "{{ ec2.instances }}"
+
+- name: terminate an instance in ec2
+  ec2:
+    region: "{{ region }}"
+    instance_ids: "{{ item.id }}"
+    state: "absent"
+  with_items: "{{ ec2.instances }}"
+
+- name: Rotation ami - find ami
+  ec2_ami_find:
+    region: "{{ region }}"
+    name: "{{ tag_name }}-*"
+    sort: creationDate
+    sort_order: descending
+  register: ami_find
+
+- name: terminate an instance in old ami
+  ec2_ami:
+    region: "{{ region }}"
+    image_id: "{{ item.ami_id }}"
+    delete_snapshot: yes
+    state: "absent"
+  with_items: "{{ ami_find.results[2:(ami_find.results|length)] }}"

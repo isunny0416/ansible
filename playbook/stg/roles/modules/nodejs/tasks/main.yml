@@ -1,0 +1,41 @@
+---
+# file: roles/modules/nodejs/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Install Devel Packages
+  yum: pkg="{{ item }}" state=installed
+  with_items:
+    - nodejs
+
+- name: Install NPM Packages
+  npm: name="{{ item }}" state=present global=yes
+  with_items:
+    - pm2
+  register: pm2_installed
+
+- shell: pm2 startup systemd
+  when: pm2_installed.results[0].changed
+
+- shell: pm2 logrotate -u root
+  when: pm2_installed.results[0].changed
+
+- name: pm2 logrotate.d
+  template: src="pm2-root.logroate.j2" dest="/etc/logrotate.d/pm2-root" owner=root group=root mode=644
+
+- name: Copy pm2.service systemd script file
+  template: src=pm2.service.j2 dest=/usr/lib/systemd/system/pm2.service owner=root group=root mode=644
+  notify: daemon reload
+
+- stat: path="{{ playbook_dir }}/roles/modules/nodejs/files/hosts/{{ tag_name }}"
+  register: hosts
+  delegate_to: localhost
+
+- name: Copy pm2 configuration files - hosts config
+  copy: src="hosts/{{ tag_name }}/" dest=/ owner=root group=root
+  notify: restart pm2
+  when: hosts.stat.exists
+
+- name: Copy pm2 configuration files
+  template: src=pm2.j2 dest=/etc/sysconfig/pm2 owner=root group=root mode=644
+  notify: restart pm2
+  when: not hosts.stat.exists

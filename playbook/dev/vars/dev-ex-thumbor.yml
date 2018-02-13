@@ -1,0 +1,41 @@
+# Local External ELB Listeners, Health Check For Nginx
+ext_elb_listeners:
+  - protocol: http
+    load_balancer_port: 80
+    instance_protocol: http
+    instance_port: 2080
+
+health_check_ext_elb: {
+  ping_protocol: http,
+  ping_port: 2080,
+  ping_path: "{{ siteup_url }}",
+  response_timeout: 5,
+  interval: 10,
+  unhealthy_threshold: 2,
+  healthy_threshold: 2
+}
+
+# Security Groups
+sg_elb:
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    cidr_ip: 0.0.0.0/0
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 0.0.0.0/0
+  - proto: icmp
+    from_port: 8
+    to_port: -1
+    cidr_ip: 52.78.10.248/32
+
+sg_instance:
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    group_name: "{{ tag_env }}-jumphost"
+  - proto: all
+    cidr_ip: 10.15.0.0/16
+  - proto: all
+    group_name: "{{ tag_name }}-elb"

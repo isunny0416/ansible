@@ -1,0 +1,21 @@
+#
+# spring boot config file
+#
+
+# Environment Value
+ENV={{ tag_env }}
+
+# APP Base
+APP_BASE=/skt/was/apps/instance01/webapps
+
+# Log Base
+LOG_PATH=/skt/was/apps/instance01/logs
+
+# Application Port
+PORT=9000
+
+{% if tag_env=="dev" %}
+JAVA_OPTS='-Xms1g -Xmx1g'
+{% else %}
+JAVA_OPTS='-Xms2g -Xmx2g'
+{% endif %}

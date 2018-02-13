@@ -1,0 +1,42 @@
+---
+# file: stg-ex-admin.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: stg-ex-admin
+    instance_type: t2.large
+    instance_role: api-role
+    termination_protection: yes
+    elb_conn_drain_tmout: 10
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    - { role: aws/ext-elb }
+    # Auto Recovery notification is generated when you create a sns
+    - { role: aws/sns, sns: "{{ auto_recovery_sns }}" }
+    - { role: aws/auto-recovery }
+
+- name: Configure instance(s)
+  hosts: tag_Name_stg-ex-admin
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: stg-ex-admin
+    domain: stg-ex-admin.sktvl.com
+    siteup_url: /siteup.html
+    awslogs: {
+      target: [ catalina, admin, inicis ] # target : array, values = [ catalina, admin, api, batch, nodejs, inicis ], log target parameter
+    }
+    inicis_mid: skthidden1
+  roles:
+    - { role: modules/nginx }
+    - { role: modules/java }
+    # enable_scouter : boolean, Enable Scouter Agent, true=regist scouter angent, false=skip
+    - { role: modules/tomcat, enable_scouter: true }
+    - { role: modules/awslogs }
+    - { role: modules/scouter-agent, scouter_server: 10.14.20.203 } # scouter_server : ip, scouter server ip
+    - { role: modules/scouter-host, scouter_server: 10.14.20.203 } # scouter_server : ip, scouter server ip
+    - { role: wrapper-node }

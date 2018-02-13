@@ -1,0 +1,20 @@
+---
+# file: group_vars/all.yml
+
+# Environment Variable Set
+tag_env: dev
+
+# Set Network Params
+vpc_id: vpc-85a810ec
+region: ap-northeast-2
+subnet10: subnet-81b236e8
+subnet20: subnet-61b33708
+subnet30: subnet-64b3370d
+subnet90: subnet-9bb236f2
+subnet110: subnet-2100f86c
+subnet120: subnet-3e01f973
+subnet130: subnet-8c995dc1
+subnet190: subnet-df00f892
+
+# Set Instance Params
+keypair: acamp_dev

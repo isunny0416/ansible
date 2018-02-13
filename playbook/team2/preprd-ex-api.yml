@@ -1,0 +1,38 @@
+---
+# file: preprd-ex-api.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: preprd-ex-api
+    instance_type: t2.medium
+    instance_role: api-role
+    elb_conn_drain_tmout: 10
+    vm_per_subnet: 1
+  roles:
+    # tag_name : string, tag name of dependency security group
+    - { role: aws/sg, tag_name: "preprd-ex-web" }
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    - { role: aws/ext-elb } # For Nginx Gateway
+    - { role: aws/int-elb }
+
+- name: Configure instance(s)
+  hosts: tag_Name_preprd-ex-api
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: preprd-ex-api
+    domain: pre-api.hiddenx.co.kr
+    awslogs: {
+      target: [ catalina, api, inicis ] # target : array, values = [ catalina, admin, api, batch, nodejs, inicis ], log target parameter
+    }
+    inicis_mid: skthidden1
+  roles:
+    - { role: modules/nginx }
+    - { role: modules/java }
+    # enable_scouter : boolean, Enable Scouter Agent, true=regist scouter angent, false=skip
+    - { role: modules/tomcat, enable_scouter: false, tag_env: preprd }
+    - { role: modules/awslogs }
+    - { role: wrapper-node }

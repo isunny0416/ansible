@@ -1,0 +1,53 @@
+# Security Groups
+sg_elb:
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    cidr_ip: 52.78.10.248/32
+  - proto: tcp # T-Tower Wired
+    from_port: 80
+    to_port: 80
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 80
+    to_port: 80
+    cidr_ip: 203.236.9.0/24
+  - proto: tcp # VPN EIP
+    from_port: 80
+    to_port: 80
+    cidr_ip: 52.79.50.145/32
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.78.10.248/32
+  - proto: tcp # T-Tower Wired
+    from_port: 443
+    to_port: 443
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 443
+    to_port: 443
+    cidr_ip: 203.236.9.0/24
+  - proto: tcp # VPN EIP
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.79.50.145/32
+  - proto: icmp
+    from_port: 8
+    to_port: -1
+    cidr_ip: 52.78.10.248/32
+
+sg_instance:
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    group_name: "{{ tag_env }}-jumphost"
+  - proto: all
+    cidr_ip: 10.15.0.0/16
+  - proto: all
+    group_name: "{{ tag_name }}-elb"
+# MUST DELETE on 09/05
+  - proto: tcp
+    from_port: 9000
+    to_port: 9000
+    group_name: "dev-ex-web"

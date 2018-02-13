@@ -1,0 +1,6 @@
+#
+# jenkins-agent config file
+#
+
+# Environment Value
+exec_dir=/skt/bin

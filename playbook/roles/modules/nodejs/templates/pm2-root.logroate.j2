@@ -1,0 +1,14 @@
+/root/.pm2/pm2.log /root/.pm2/logs/*.log /skt/web/logs/*.log {
+        daily
+        missingok
+        rotate 8
+        compress
+        delaycompress
+        notifempty
+        create 640 root root
+        sharedscripts
+        dateext
+        postrotate
+                [ -f /root/.pm2/pm2.pid ] && kill -USR2 `cat /root/.pm2/pm2.pid`
+        endscript
+}

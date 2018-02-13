@@ -1,0 +1,8 @@
+{# for WEB server's Inicis raw log file #}
+[payment.log]
+file = /skt/web/logs/payment.log
+buffer_duration = 5000
+log_stream_name = {instance_id}
+initial_position = start_of_file
+datetime_format = %Y-%m-%d %H:%M:%S
+log_group_name = payment.log

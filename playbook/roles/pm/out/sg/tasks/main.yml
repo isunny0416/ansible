@@ -1,0 +1,40 @@
+---
+# file: roles/pm/in/sg/tasks/main.yml
+- include_vars: "../{{ lookup('env', 'AWS_PROFILE') }}/vars/{{ tag_name }}.yml"
+
+- name: maintain an ec2 VPC security group for elb
+  ec2_group:
+    name: "{{ tag_name }}-elb"
+    description: "security group for {{ tag_name }}-elb"
+    region: "{{ region }}"
+    vpc_id: "{{ vpc_id }}"
+    rules: "{{ sg_elb }}"
+  when: sg_elb is defined
+
+- name: maintain an ec2 VPC security group for internal elb
+  ec2_group:
+    name: "{{ tag_name }}-internal-elb"
+    description: "security group for {{ tag_name }}-internal-elb"
+    region: "{{ region }}"
+    vpc_id: "{{ vpc_id }}"
+    rules: "{{ sg_internal_elb }}"
+  when: sg_internal_elb is defined
+
+- name: maintain an ec2 VPC security group for asg
+  ec2_group:
+    name: "{{ tag_name }}-asg"
+    description: "security group for {{ tag_name }}-asg"
+    region: "{{ region }}"
+    vpc_id: "{{ vpc_id }}"
+    rules: "{{ sg_asg }}"
+  when: sg_asg is defined
+
+- name: maintain an ec2 VPC security group for instance
+  ec2_group:
+    name: "{{ tag_name }}"
+    description: "security group for {{ tag_name }}"
+    region: "{{ region }}"
+    vpc_id: "{{ vpc_id }}"
+    rules: "{{ sg_instance }}"
+  register: sg
+  when: sg_instance is defined

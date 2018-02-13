@@ -1,0 +1,11 @@
+---
+# file: roles/deploy_bi_batch/tasks/main.yml
+
+- stat: path=/skt/repo/{{ tag_env }}/{{ tag_name }}/new/batch.jar
+  delegate_to: jenkins.sktvl.com
+  register: rs
+
+- name: deploy bi batch
+  synchronize: src=/skt/repo/{{ tag_env }}/{{ tag_name }}/new/batch.jar dest=/skt/batch/batch.jar
+  delegate_to: jenkins.sktvl.com
+  when: rs.stat.exists

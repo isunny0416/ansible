@@ -1,0 +1,5 @@
+---
+# file: roles/deploy/deploy_app/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- debug: msg="Empty Task"

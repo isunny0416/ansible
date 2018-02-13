@@ -1,0 +1,9 @@
+---
+# file: roles/modules/spring-boot/handlers/main.yml
+
+- name: daemon reload
+  shell: systemctl daemon-reload
+  notify: restart spring-boot
+
+- name: restart spring-boot
+  service: name=spring-boot enabled=yes state=restarted

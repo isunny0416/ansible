@@ -1,0 +1,23 @@
+---
+# roles/aws/asg-elb/tasks/external-elb.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Creates Amazon External ELB for Auto Scaling
+  ec2_elb_lb:
+    name: "{{ tag_name }}"
+    state: present
+    region: "{{ region }}"
+    security_group_names: "{{ tag_name }}-elb"
+    cross_az_load_balancing: "yes"
+    connection_draining_timeout: "{{ elb_conn_drain_tmout }}"
+    subnets: "{{ elb_subnets }}"
+    listeners: "{{ ext_elb_listeners }}"
+    health_check: "{{ health_check_ext_elb }}"
+    access_logs: "{{ access_logs }}"
+  register: elb
+
+- set_fact:
+    ext_elb_list:
+      - "{{ elb.elb.name }}"
+
+- set_fact: elbs="{{ elbs }} + {{ ext_elb_list }}"

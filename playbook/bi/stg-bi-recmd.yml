@@ -1,0 +1,28 @@
+---
+# file: stg-bi-recmd.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: stg-bi-recmd
+    instance_type: t2.medium
+    instance_role: api-role
+    termination_protection: yes
+    vm_per_subnet: 1
+  roles:
+    # tag_name : string, tag name of dependency security group
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+
+- name: Configure instance(s)
+  hosts: tag_Name_stg-bi-recmd
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: stg-bi-recmd
+    jenkins_secret: "703cb0f1435b1beba3ef9efde5b9e8c1da026bca23a2c2f60a0b36aad77e47e0"
+  roles:
+    - { role: modules/java }
+    - { role: modules/jenkins-slave }
+    - { role: wrapper-node }

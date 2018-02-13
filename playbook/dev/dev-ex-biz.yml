@@ -1,0 +1,29 @@
+---
+# file: dev-ex-biz.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: dev-ex-biz
+    instance_type: t2.medium
+    instance_role: api-role
+    termination_protection: yes
+    vm_per_subnet: 1
+    elb_conn_drain_tmout: 10
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    - { role: aws/int-elb }
+
+- name: Configure instance(s)
+  hosts: tag_Name_dev-ex-biz
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: dev-ex-biz
+    domain: localhost
+  roles:
+    - { role: modules/java }
+    - { role: modules/spring-boot }
+    - { role: wrapper-node }

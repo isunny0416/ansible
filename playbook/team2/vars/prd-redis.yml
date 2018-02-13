@@ -1,0 +1,47 @@
+# Security Group
+sg_instance:
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "prd-ex-api"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "prd-ex-admin"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "prd-logstash"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "prd-ex-batch"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "preprd-ex-api"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "preprd-ex-admin"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "prd-ex-search-api"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "prd-ex-biz"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "preprd-ex-biz"
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    group_name: "preprd-ex-search-api"
+# OPS VIEW
+  - proto: tcp
+    from_port: 8379
+    to_port: 8379
+    cidr_ip: 10.10.10.108/32

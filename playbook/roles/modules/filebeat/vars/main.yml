@@ -1,0 +1,12 @@
+# sample filebeat variable
+# filebeat:
+#   input_type: "log"
+#   input_path: "/var/log/nginx/{{ domain }}.access.log"
+#   document_type: "{{ tag_name }}_nginx_access"
+#   output_type: "redis"
+#   output_description: {
+#     hosts: '["test:8379"]',
+#     key: '"infra.test"',
+#     db: 0,
+#     timeout: 5
+#   }

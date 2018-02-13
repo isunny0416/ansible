@@ -1,0 +1,58 @@
+---
+# file: roles/wrapper-node/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- stat: path="{{ playbook_dir }}/roles/wrapper-node/files/common/{{ aws_profile }}/00-skt"
+  register: rs
+  delegate_to: localhost
+
+- name: Copy sudoers configuration files
+  copy: src=common/{{ aws_profile }}/00-skt dest=/etc/sudoers.d/ owner=root group=root mode=644
+  when: ( rs.stat.exists ) and ( tag_name.find('jumphost') == -1 )
+
+- stat: path="{{ playbook_dir }}/roles/wrapper-node/files/common/{{ aws_profile }}/id_rsa.pub"
+  register: rs
+  delegate_to: localhost
+
+- name: Set skt ssh key
+  authorized_key: user=skt key="{{ lookup('file', '{{ playbook_dir }}/roles/wrapper-node/files/common/{{ aws_profile }}/id_rsa.pub') }}"
+  when: ( rs.stat.exists ) and ( tag_name.find('jumphost') == -1 )
+
+- stat: path="{{ playbook_dir }}/roles/wrapper-node/files/common/{{ aws_profile }}/bash_profile"
+  register: bash_profile
+  delegate_to: localhost
+
+- name: Copy root bash_profile configuration files
+  copy: src=common/{{ aws_profile }}/bash_profile dest=/root/.bash_profile owner=root group=root mode=644
+  when: bash_profile.stat.exists
+
+- stat: path="{{ playbook_dir }}/roles/wrapper-node/files/common/{{ aws_profile }}/tmout.sh"
+  register: tmout
+  delegate_to: localhost
+
+- name: Copy root profile.d tmout.sh configuration files
+  copy: src=common/{{ aws_profile }}/tmout.sh dest=/etc/profile.d/tmout.sh owner=root group=root mode=644
+  when: tmout.stat.exists
+
+- stat: path="{{ playbook_dir }}/roles/wrapper-node/files/common/{{ aws_profile }}/rsyslog.conf"
+  register: rsyslog
+  delegate_to: localhost
+
+- name: Copy root rsyslog.conf configuration files
+  copy: src=common/{{ aws_profile }}/rsyslog.conf dest=/etc/rsyslog.conf owner=root group=root mode=644
+  when: rsyslog.stat.exists
+
+- stat: path="{{ playbook_dir }}/roles/wrapper-node/files/hosts/{{ tag_name }}"
+  register: hosts
+  delegate_to: localhost
+
+- name: Wrapper node config file
+  copy: src="hosts/{{ tag_name }}/" dest=/
+  when: hosts.stat.exists
+
+- stat: path="/skt/inicis"
+  register: inicis
+
+- name: inicis Cert file Permission Change
+  file: path="/skt/inicis" owner=nobody group=nobody recurse=yes
+  when: inicis.stat.exists

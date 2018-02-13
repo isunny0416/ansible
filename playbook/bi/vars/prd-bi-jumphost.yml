@@ -1,0 +1,6 @@
+# Security Groups
+sg_instance:
+  - proto: tcp
+    from_port: 2022
+    to_port: 2022
+    cidr_ip: 10.10.90.218/32

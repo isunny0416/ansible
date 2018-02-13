@@ -1,0 +1,17 @@
+---
+# file: roles/modules/awslogs/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- stat: path="{{ playbook_dir }}/roles/modules/awslogs/files/hosts/{{ tag_name }}"
+  register: hosts
+  delegate_to: localhost
+
+- name: Create awslogs local config file - hosts config
+  copy: src="hosts/{{ tag_name }}/" dest=/ owner=root group=root
+  notify: restart awslogs
+  when: hosts.stat.exists
+
+- name: AWS cloudwatch log config
+  template: src="awslogs.{{ item }}.conf.j2" dest="/var/awslogs/etc/config/awslogs.{{ item }}.conf" owner=root group=root mode=644
+  with_items: "{{ awslogs.target }}"
+  notify: restart awslogs

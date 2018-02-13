@@ -1,0 +1,32 @@
+---
+# file: preprd-ex-biz.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: preprd-ex-biz
+    instance_type: t2.medium
+    instance_role: api-role
+    vm_per_subnet: 1
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+
+- name: Configure instance(s)
+  hosts: tag_Name_preprd-ex-biz
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: preprd-ex-biz
+    awslogs: {
+      target: [ spring-boot, inicis ] # target : array, values = [ catalina, admin, api, batch, nodejs, inicis ], log target parameter
+    }
+    inicis_mid: skthidden1
+  roles:
+    - { role: modules/java }
+    - { role: modules/spring-boot }
+    - { role: modules/awslogs }
+    #- { role: modules/scouter-agent, scouter_server: 10.13.20.180 } # scouter_server : ip, scouter server ip
+    #- { role: modules/scouter-host, scouter_server: 10.13.20.180 } # scouter_server : ip, scouter server ip
+    - { role: wrapper-node }

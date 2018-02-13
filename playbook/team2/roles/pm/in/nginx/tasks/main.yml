@@ -1,0 +1,18 @@
+---
+# file: roles/pm/in/nginx/tasks/main.yml
+
+- name: create httpd directory
+  file: path=/home/httpd/vhosts/localhost state=directory mode=0755
+
+- name: siteup file copy in maintenance directory
+  copy: src=siteup.html dest=/home/httpd/vhosts/localhost
+
+- name: index file copy in maintenance directory
+  template: src=index.html.j2 dest=/home/httpd/vhosts/localhost/index.html owner=root group=root mode=644
+
+- name: Origin File backup
+  fetch: src=/etc/nginx/conf.d/vhosts.conf dest="{{ playbook_dir }}/roles/pm/out/nginx/files" flat=no
+
+- name: Change config for maintenance in
+  template: src=vhosts-mntin.conf.j2 dest=/etc/nginx/conf.d/vhosts.conf owner=root group=root mode=644
+  notify: restart nginx

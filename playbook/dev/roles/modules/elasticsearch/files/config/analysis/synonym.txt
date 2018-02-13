@@ -1,0 +1,4 @@
+컬쳐/N,컬처/N=>컬쳐/N,
+베트남/N,한국/N=>베트남/N,
+파티/N,party/SL,part/SL=>파티/N,
+리딩/N,leading/SL,주도/N

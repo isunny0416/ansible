@@ -1,0 +1,29 @@
+---
+# file: dev-ex-web.yml
+
+- name: AWS provisioning
+  hosts: localhost
+  gather_facts: False
+  vars:
+    tag_name: dev-ex-web
+    instance_type: t2.micro
+    instance_role: cloudwatch-logs-role
+    termination_protection: yes
+    vm_per_subnet: 1
+    elb_conn_drain_tmout: 10
+  roles:
+    - { role: aws/sg }
+    - { role: aws/ec2, subnet_id: "{{ subnet20 }}" }
+    - { role: aws/ext-elb }
+
+- name: Configure instance(s)
+  hosts: tag_Name_dev-ex-web
+  gather_facts: False
+  serial: 1
+  vars:
+    tag_name: dev-ex-web
+    domain: www-ex.sktvl.net
+  roles:
+    - { role: modules/nginx }
+    - { role: modules/nodejs }
+    - { role: wrapper-node }

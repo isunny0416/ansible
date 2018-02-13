@@ -1,0 +1,9 @@
+---
+# file: roles/modules/scouter-host/handlers/main.yml
+
+- name: daemon reload
+  shell: systemctl daemon-reload
+
+- name: restart scouter-host
+  service: name=scouter enabled=yes state=restarted
+  

@@ -1,0 +1,28 @@
+---
+# file: roles/modules/jumphost/tasks/main.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Copy sudoers configuration files
+  copy: src=00-skt dest=/etc/sudoers.d/ owner=root group=root mode=644
+
+- name: Install SSSD
+  yum: pkg=sssd state=latest
+
+- name: Configure authconfig
+  command: /usr/sbin/authconfig --enablesssd --enablesssdauth --enablemkhomedir --update
+
+- name: Copy sssd configuration files
+  template: src=sssd.conf.j2 dest=/etc/sssd/sssd.conf owner=root group=root mode=600
+  notify: restart sssd
+
+- name: Copy sudoers configuration files
+  copy: src=00-skt dest=/etc/sudoers.d/ owner=root group=root mode=644
+
+- name: Generate skt ssh key
+  user: name=skt generate_ssh_key=yes
+
+- name: Create ssh-key directory
+  file: path="{{ playbook_dir }}/roles/wrapper-node/files/common/{{ aws_profile }}" state=directory owner=root group=root mode=0755
+
+- name: Fetch skt ssh key
+  fetch: src=/home/skt/.ssh/id_rsa.pub dest="{{ playbook_dir }}/roles/wrapper-node/files/common/{{ aws_profile }}/id_rsa.pub" flat=yes

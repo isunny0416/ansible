@@ -1,0 +1,30 @@
+# Security Group
+sg_instance:
+# Scouter agent to server
+  - proto: tcp
+    from_port: 6100
+    to_port: 6100
+    group_name: "prd-ex-api"
+  - proto: udp
+    from_port: 6100
+    to_port: 6100
+    group_name: "prd-ex-api"
+  - proto: tcp
+    from_port: 6100
+    to_port: 6100
+    group_name: "prd-ex-admin"
+  - proto: udp
+    from_port: 6100
+    to_port: 6100
+    group_name: "prd-ex-admin"    
+# Scouter client to server (VPN)
+  - proto: tcp
+    from_port: 6100
+    to_port: 6100
+    cidr_ip: 10.10.90.218/32
+# Scouter client to server (DBA-VPN)
+  - proto: tcp
+    from_port: 6100
+    to_port: 6100
+    cidr_ip: 10.10.190.229/32
+

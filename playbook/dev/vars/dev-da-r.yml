@@ -1,0 +1,42 @@
+# Security Groups
+sg_instance:
+  - proto: all
+    cidr_ip: 10.10.90.218/32
+  - proto: all
+    cidr_ip: 10.15.0.0/16
+  - proto: tcp # T-Tower Wired
+    from_port: 9010
+    to_port: 9010
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 9010
+    to_port: 9010
+    cidr_ip: 203.236.9.0/24
+  - proto: tcp # T-Tower Wired
+    from_port: 9002
+    to_port: 9002
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 9002
+    to_port: 9002
+    cidr_ip: 203.236.9.0/24
+  - proto: tcp # T-Tower Wired
+    from_port: 80
+    to_port: 80
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 80
+    to_port: 80
+    cidr_ip: 203.236.9.0/24
+  - proto: tcp # VPN EIP
+    from_port: 80
+    to_port: 80
+    cidr_ip: 52.79.50.145/32
+  - proto: tcp # VPN EIP
+    from_port: 9010
+    to_port: 9010
+    cidr_ip: 52.79.50.145/32
+  - proto: tcp # VPN EIP
+    from_port: 9002
+    to_port: 9002
+    cidr_ip: 52.79.50.145/32

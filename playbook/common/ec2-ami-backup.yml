@@ -1,0 +1,21 @@
+---
+# file: ec2-ami-backup.yml
+
+- name: Common zone ec2 instance ami backup
+  hosts: localhost
+  gather_facts: True
+  vars:
+    vm_per_subnet: 1
+    rotation: 3
+    version: "{{ ansible_date_time.date }}"
+  roles:
+    - { role: "aws/ami", tag_name: infra.pwm }
+    - { role: "aws/ami", tag_name: infra.ad }
+    - { role: "aws/ami", tag_name: sonarqube }
+    - { role: "aws/ami", tag_name: infra.build }
+    - { role: "aws/ami", tag_name: opsview }
+    - { role: "aws/ami", tag_name: cacti }
+    - { role: "aws/ami", tag_name: vpn }
+    - { role: "aws/ami", tag_name: infra.root }
+    - { role: "aws/ami", tag_name: infra.jenkins }
+    - { role: "aws/ami", tag_name: infra.pkgrepos }

@@ -1,0 +1,18 @@
+---
+# roles/aws/elb/tasks/external-elb.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Creates Amazon External ELB
+  ec2_elb_lb:
+    name: "{{ tag_name }}"
+    state: present
+    region: "{{ region }}"
+    security_group_names: "{{ tag_name }}-elb"
+    cross_az_load_balancing: "yes"
+    connection_draining_timeout: "{{ elb_conn_drain_tmout }}"
+    instance_ids: "{{ item.id }}"
+    subnets: "{{ elb_subnets }}"
+    listeners: "{{ ext_elb_listeners }}"
+    health_check: "{{ health_check_ext_elb }}"
+    access_logs: "{{ access_logs }}"
+  with_items: "{{ ec2.tagged_instances }}"

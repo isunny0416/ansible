@@ -1,0 +1,20 @@
+---
+# file: group_vars/all.yml
+
+# Environment Variable Set
+tag_env: prd
+
+# Set Network Params
+vpc_id: vpc-c29a69ab
+region: ap-northeast-2
+subnet10: subnet-32e15a5b
+subnet20: subnet-03bc0a6a
+subnet30: subnet-ade15ac4
+subnet90: subnet-3f3ce356
+subnet110: subnet-e69d66ab
+subnet120: subnet-9b04f2d6
+subnet130: subnet-b99d66f4
+subnet190: subnet-270a136d
+
+# AD Auth Group
+ldap_access_cn: bi

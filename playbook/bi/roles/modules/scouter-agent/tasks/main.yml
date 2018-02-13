@@ -1,0 +1,10 @@
+---
+# file: roles/modules/scouter-agent/tasks/configure.yml
+- include_vars: "{{ tag_name }}.yml"
+
+- name: Copy Scouter agent libs directory
+  copy: src=libs/ dest=/skt/was/apps/instance01/libs/ owner=root group=root mode=644
+
+- name: Copy Scouter agent configuration files
+  template: src=scouter.conf.j2 dest=/skt/was/apps/instance01/conf/scouter.conf owner=root group=root mode=644
+  notify: restart tomcat

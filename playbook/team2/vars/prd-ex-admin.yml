@@ -1,0 +1,82 @@
+sg_elb:
+  - proto: tcp # T-Tower Wired
+    from_port: 80
+    to_port: 80
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 80
+    to_port: 80
+    cidr_ip: 203.236.9.0/24
+  - proto: tcp # T-Tower Wired
+    from_port: 443
+    to_port: 443
+    cidr_ip: 203.236.3.0/24
+  - proto: tcp # T-Tower Wifi
+    from_port: 443
+    to_port: 443
+    cidr_ip: 203.236.9.0/24
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    cidr_ip: 52.78.10.248/32
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.78.10.248/32
+## VPN public IP ##
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    cidr_ip: 52.79.50.145/32
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.79.50.145/32
+  - proto: icmp
+    from_port: 8
+    to_port: -1
+    cidr_ip: 52.78.10.248/32
+### Partner ########
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    cidr_ip: 211.117.139.47/32
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 211.117.139.47/32
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    cidr_ip: 119.69.237.216/32
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 119.69.237.216/32
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    cidr_ip: 121.128.89.142/32
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 121.128.89.142/32
+# bi PRD NAT
+  - proto: tcp
+    from_port: 443
+    to_port: 443
+    cidr_ip: 52.78.28.214/32
+
+sg_instance:
+  - proto: tcp
+    from_port: 2080
+    to_port: 2080
+    group_name: "{{ tag_name }}-elb"
+  - proto: tcp # Must Delete
+    from_port: 9000
+    to_port: 9000
+    group_name: "{{ tag_name }}-elb"
+  - proto: tcp # Jenkins health check
+    from_port: 9000
+    to_port: 9000
+    cidr_ip: 10.10.90.58/32
