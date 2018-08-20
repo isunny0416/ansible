@@ -1,0 +1,22 @@
+---
+- name: Nutanix
+  hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: TEST
+      ntnx_vm:
+        image: '601f3bcd-3f9d-44a2-b5ec-4f491cff1624'
+        hostname: "{{ item }}"
+        cores_per_vcpu: 1
+        vcpus: 4
+        memory: 8
+        disks:
+          - storage_name: SelfServiceContainer
+            size: 50
+        state: present
+      with_items:
+        - iskim-01
+        - iskim-02
+      register: rs
+
+    - debug: msg="{{ rs }}"

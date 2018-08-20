@@ -1,0 +1,14 @@
+---
+- name: Nutanix
+  hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: TEST
+      ntnx_vm:
+        hostname: "{{ item }}"
+        state: absent
+      with_items:
+        - iskim-01
+        - iskim-02
+        - iskim-03
+    
