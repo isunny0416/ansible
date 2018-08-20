@@ -1,0 +1,9 @@
+[defaults]
+default_url = http://0.0.0.0:9440/PrismGateway/services/rest/v2.0
+user_name = admin
+user_password = nutanix
+
+[0.0.0.0:9440]
+default_url = http://0.0.0.0:9440/PrismGateway/services/rest/v2.0
+user_name = admin
+user_password = nutanix
